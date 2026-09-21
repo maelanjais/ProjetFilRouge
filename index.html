@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- index.html — page principale de la messagerie : barre supérieure,
+     liste des conversations à gauche et zone de discussion à droite. -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -8,6 +10,141 @@
   <title>Accueil - Messagerie</title>
 </head>
 <body>
+
+  <!-- En-tête du site -->
+  <header>
+    <p>MESSAGERIE</p>
+
+    <div>
+      <button type="button">⚙</button>
+      <div>
+        <p>Thomas L.</p>
+        <p>CONNECTÉ</p>
+      </div>
+      <span>TL</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Volet latéral : recherche, favoris et conversations -->
+    <aside>
+
+      <!-- Barre de recherche -->
+      <form>
+        <input type="search" placeholder="Rechercher une conversation">
+      </form>
+
+      <!-- Liste des favoris -->
+      <section>
+        <h2>FAVORIS</h2>
+        <ul>
+          <li><span>TH</span> Thomas</li>
+          <li><span>CO</span> Couscous</li>
+          <li><span>B6</span> Bot6</li>
+          <li><span>BA</span> Babouche</li>
+        </ul>
+      </section>
+
+      <!-- Liste des conversations -->
+      <section>
+        <h2>CONVERSATIONS <span>12</span></h2>
+
+        <ul>
+          <li>
+            <span>KM</span>
+            <div>
+              <h3>Mbappé</h3>
+              <p>On se cale ça pour jeudi ?</p>
+            </div>
+            <time>5 min</time>
+            <span>2</span>
+          </li>
+
+          <li>
+            <span>CO</span>
+            <div>
+              <h3>Couscous</h3>
+              <p>Vous : j'arrive dans 10</p>
+            </div>
+            <time>1 h</time>
+          </li>
+
+          <li>
+            <span>B6</span>
+            <div>
+              <h3>Bot6</h3>
+              <p>Sauvegarde terminée</p>
+            </div>
+            <time>Hier</time>
+          </li>
+
+          <li>
+            <span>BA</span>
+            <div>
+              <h3>Babouche</h3>
+              <p>Photo</p>
+            </div>
+            <time>Lun.</time>
+          </li>
+
+          <li>
+            <span>TH</span>
+            <div>
+              <h3>Thomas</h3>
+              <p>Vous : noté, merci</p>
+            </div>
+            <time>3 j</time>
+          </li>
+        </ul>
+      </section>
+
+      <button type="button">NOUVELLE CONVERSATION +</button>
+    </aside>
+
+    <!-- Zone de discussion active -->
+    <section>
+      <!-- Contact actif -->
+      <header>
+        <span>KM</span>
+        <h2>Mbappé</h2>
+      </header>
+
+      <!-- Historique des échanges -->
+      <div>
+        <p>AUJOURD'HUI</p>
+
+        <!-- Messages reçus et envoyés -->
+        <div>
+          <p>Salut, tu as regardé le planning de la semaine ?</p>
+          <time>14:02</time>
+        </div>
+
+        <div>
+          <p>Oui, jeudi après-midi ça me va.</p>
+          <time>14:05</time>
+          <span>— ENVOYÉ</span>
+        </div>
+
+        <div>
+          <p>Parfait. Je bloque 14 h – 16 h et j'invite Thomas.</p>
+          <time>14:06</time>
+        </div>
+
+        <div>
+          <p>On se cale ça pour jeudi ?</p>
+          <time>14:12</time>
+        </div>
+      </div>
+
+      <!-- Formulaire d'envoi -->
+      <form>
+        <button type="button">+</button>
+        <button type="button">🎙</button>
+        <input type="text" placeholder="Écrire un message" required>
+        <button type="submit">ENVOYER &rarr;</button>
+      </form>
+    </section>
+  </main>
 
 </body>
 </html>
