@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- inscription.html — page d'inscription : panneau d'accroche à gauche,
+     formulaire de création de compte à droite. -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+        content="Messagerie instantanée Web : échangez des messages en temps réel.">
+  <title>Inscription - Messagerie</title>
+</head>
+<body>
+  <main>
+    <!-- Panneau d'accroche : nom du site et slogan -->
+    <section>
+      <header>
+        <p>Messagerie</p>
+      </header>
+      <h1>Inscrivez-vous et</h1>
+      <p>discutez sans interruptions</p>
+    </section>
+
+    <!-- Formulaire de création de compte -->
+    <section>
+      <h2>Inscrivez-vous</h2>
+
+      <form>
+        <div>
+          <label for="nom-utilisateur">Utilisateur</label>
+          <input type="text" id="nom-utilisateur" name="nom-utilisateur"
+                 placeholder="thomas.l" autocomplete="username"
+                 minlength="3" maxlength="30" required>
+        </div>
+
+        <div>
+          <label for="courriel">Courriel</label>
+          <input type="email" id="courriel" name="courriel"
+                 placeholder="thomas@exemple.com" autocomplete="email" required>
+        </div>
+
+        <div>
+          <label for="mot-de-passe">Mot de passe</label>
+          <input type="password" id="mot-de-passe" name="mot-de-passe"
+                 placeholder="8 caractères minimum" autocomplete="new-password"
+                 minlength="8" required>
+        </div>
+
+        <div>
+          <label for="confirmation-mot-de-passe">Confirmation</label>
+          <input type="password" id="confirmation-mot-de-passe"
+                 name="confirmation-mot-de-passe" autocomplete="new-password"
+                 minlength="8" required>
+        </div>
+
+        <button type="submit">Créer le compte</button>
+      </form>
+
+      <p>Déjà inscrit ? <a href="connexion.html">Connectez-vous</a></p>
+      <p>
+        En créant un compte, vous acceptez la politique de confidentialité.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
