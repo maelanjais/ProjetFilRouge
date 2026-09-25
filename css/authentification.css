@@ -1,0 +1,123 @@
+/* authentification.css — mise en page commune aux pages de connexion et
+   d'inscription : panneau d'accroche coloré + panneau formulaire. */
+
+/* ---- Structure de la page ---- */
+.auth {
+  display: grid;
+  grid-template-columns: 3fr 5fr;
+  min-height: 100vh;
+}
+
+/* ---- Panneau d'accroche ---- */
+.auth__accroche {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--espace-xxl) var(--espace-xl);
+  color: var(--couleur-texte-inverse);
+  background-color: var(--couleur-primaire);
+}
+
+/* Variante inscription : fond sombre */
+.auth--inscription .auth__accroche {
+  background-color: var(--couleur-sombre);
+}
+
+/* ---- Marque en haut à gauche ---- */
+.auth__marque {
+  font-size: var(--taille-s);
+  font-weight: 800;
+  letter-spacing: var(--espacement-lettres);
+  text-transform: uppercase;
+}
+
+/* Le slogan occupe l'espace restant et se centre verticalement */
+.auth__slogan {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: var(--taille-geante);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+/* Petit trait décoratif sous le slogan */
+.auth__slogan::after {
+  content: "";
+  display: block;
+  width: 25%;
+  margin-top: var(--espace-l);
+  border-bottom: var(--epaisseur-accent) solid var(--couleur-texte-inverse);
+}
+
+.auth--inscription .auth__slogan::after {
+  border-bottom-color: var(--couleur-primaire);
+}
+
+/* ---- Panneau formulaire ---- */
+.auth__contenu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--espace-l);
+  width: 100%;
+  max-width: 40rem;
+  padding: var(--espace-xxl);
+}
+
+.auth__titre {
+  padding-bottom: var(--espace-l);
+  border-bottom: var(--epaisseur-accent) solid var(--couleur-bordure);
+  font-size: var(--taille-xxl);
+  font-weight: 800;
+}
+
+/* ---- Formulaire ---- */
+.formulaire-auth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-l);
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-xs);
+}
+
+.champ__label {
+  font-size: var(--taille-xs);
+  font-weight: 700;
+  letter-spacing: var(--espacement-lettres);
+  text-transform: uppercase;
+}
+
+/* Champ souligné, sans cadre */
+.champ__saisie {
+  min-height: var(--hauteur-cible-tactile);
+  padding: var(--espace-xs) 0;
+  border: none;
+  border-bottom: var(--epaisseur-trait) solid var(--couleur-texte);
+  border-radius: 0;
+  font-size: var(--taille-l);
+  color: var(--couleur-texte);
+  background-color: transparent;
+}
+
+/* Placeholder du champ */
+.champ__saisie::placeholder {
+  color: var(--couleur-texte-discret);
+}
+
+/* ---- Liens et mentions sous le formulaire ---- */
+.auth__lien-bascule {
+  font-size: var(--taille-m);
+}
+
+.auth__mentions {
+  padding-top: var(--espace-m);
+  border-top: var(--epaisseur-trait) solid var(--couleur-bordure);
+  font-size: var(--taille-xs);
+  color: var(--couleur-texte-discret);
+}

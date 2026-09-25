@@ -1,0 +1,96 @@
+/* style.css — styles globaux partagés par toutes les pages */
+
+/* ---- Variables ---- */
+:root {
+  /* Couleurs */
+  --couleur-primaire: #5c7314;
+  --couleur-primaire-foncee: #3d4d0d;
+  --couleur-sombre: #1c1c1c;
+  --couleur-fond: #f6f3f2;
+  --couleur-texte: #1c1c1c;
+  --couleur-texte-inverse: #ffffff;
+  --couleur-texte-discret: #626262;
+  --couleur-bordure: #d4d4cc;
+
+  /* Polices*/
+  --police-base: system-ui, sans-serif;
+
+  /* Tailles de texte */
+  --taille-xs: 0.8125rem;
+  --taille-s: 0.875rem;
+  --taille-m: 1rem;
+  --taille-l: 1.125rem;
+  --taille-xxl: 2.5rem;
+  --taille-geante: 4rem; 
+
+  /* Espacements */
+  --espace-xs: 0.5rem;
+  --espace-m: 1rem;
+  --espace-l: 1.5rem;
+  --espace-xl: 2rem;
+  --espace-xxl: 4rem;
+
+  /* Détails */
+  --epaisseur-trait: 1px;
+  --epaisseur-accent: 3px;
+  --espacement-lettres: 0.12em;
+  --hauteur-cible-tactile: 2.75rem; 
+}
+
+/* ---- Réinitialisation pour les espacements ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--police-base);
+  font-size: var(--taille-m);
+  line-height: 1.5;
+  color: var(--couleur-texte);
+  background-color: var(--couleur-fond);
+}
+
+/* Les titres et paragraphes HTML appliquent un margin par défaut que l'on ne veut pas */
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+/* Les champs de formulaire n'héritent pas de la police par défaut */
+input,
+button {
+  font: inherit;
+}
+
+/* ---- Liens ---- */
+a {
+  color: var(--couleur-primaire-foncee);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--couleur-primaire);
+}
+
+/* ---- Bouton principal ---- */
+.bouton-principal {
+  min-height: var(--hauteur-cible-tactile);
+  padding: var(--espace-m) var(--espace-l);
+  border: none;
+  font-weight: 700;
+  letter-spacing: var(--espacement-lettres);
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--couleur-texte-inverse);
+  background-color: var(--couleur-primaire);
+  cursor: pointer;
+}
+
+.bouton-principal:hover {
+  background-color: var(--couleur-primaire-foncee);
+}

@@ -8,39 +8,43 @@
   <meta name="description"
         content="Messagerie instantanée Web : échangez des messages en temps réel.">
   <title>Connexion - Messagerie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/authentification.css">
 </head>
 <body>
-  <main>
+  <main class="auth">
     <!-- Panneau d'accroche : nom du site et slogan -->
-    <section>
+    <section class="auth__accroche">
       <header>
-        <p>Messagerie</p>
+        <p class="auth__marque">Messagerie</p>
       </header>
-      <h1>Connectez-vous</h1>
+      <h1 class="auth__slogan">Connectez-vous</h1>
     </section>
 
     <!-- Formulaire de connexion -->
-    <section>
-      <h2>Connexion</h2>
+    <section class="auth__contenu">
+      <h2 class="auth__titre">Connexion</h2>
 
-      <form>
-        <div>
-          <label for="courriel">Courriel</label>
-          <input type="email" id="courriel" name="courriel"
+      <form class="formulaire-auth">
+        <div class="champ">
+          <label class="champ__label" for="courriel">Courriel</label>
+          <input class="champ__saisie" type="email" id="courriel" name="courriel"
                  placeholder="thomas@exemple.com" autocomplete="email" required>
         </div>
 
-        <div>
-          <label for="mot-de-passe">Mot de passe</label>
-          <input type="password" id="mot-de-passe" name="mot-de-passe"
-                 placeholder="8 caractères minimum" autocomplete="new-password"
+        <div class="champ">
+          <label class="champ__label" for="mot-de-passe">Mot de passe</label>
+          <input class="champ__saisie" type="password" id="mot-de-passe" name="mot-de-passe"
+                 placeholder="8 caractères minimum" autocomplete="current-password"
                  minlength="8" required>
         </div>
 
-        <button type="submit">Se connecter</button>
+        <button class="bouton-principal" type="submit">Se connecter</button>
       </form>
 
-      <p>Pas de compte ? <a href="inscription.html">Inscrivez-vous</a></p>
+      <p class="auth__lien-bascule">
+        Pas de compte ? <a href="inscription.html">Inscrivez-vous</a>
+      </p>
     </section>
   </main>
 </body>
