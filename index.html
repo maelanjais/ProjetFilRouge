@@ -8,142 +8,221 @@
   <meta name="description"
         content="Messagerie instantanée Web : échangez des messages en temps réel.">
   <title>Accueil - Messagerie</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="page-messagerie">
 
   <!-- En-tête du site -->
-  <header>
-    <p>MESSAGERIE</p>
+  <header class="app-header">
+    <div class="logo">MESSAGERIE</div>
 
-    <div>
-      <button type="button">⚙</button>
-      <div>
-        <p>Thomas L.</p>
-        <p>CONNECTÉ</p>
+    <div class="header-user">
+      <button type="button" class="btn-settings" aria-label="Paramètres">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+
+      <div class="user-info">
+        <span class="user-name">Thomas L.</span>
+        <span class="user-status">CONNECTÉ</span>
       </div>
-      <span>TL</span>
+
+      <div class="avatar avatar-header">TL</div>
     </div>
   </header>
 
-  <main>
+  <!-- Contenu principal -->
+  <main class="app-main">
+
     <!-- Volet latéral : recherche, favoris et conversations -->
-    <aside>
+    <aside class="sidebar">
 
-      <!-- Barre de recherche -->
-      <form>
-        <input type="search" placeholder="Rechercher une conversation">
-      </form>
+      <div class="sidebar-top">
+        <!-- Barre de recherche -->
+        <div class="search-bar">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" placeholder="Rechercher une conversation">
+        </div>
 
-      <!-- Liste des favoris -->
-      <section>
-        <h2>FAVORIS</h2>
-        <ul>
-          <li><span>TH</span> Thomas</li>
-          <li><span>CO</span> Couscous</li>
-          <li><span>B6</span> Bot6</li>
-          <li><span>BA</span> Babouche</li>
-        </ul>
-      </section>
+        <!-- Liste des favoris -->
+        <section class="favorites-section">
+          <h2 class="section-title">FAVORIS</h2>
+          <ul class="favorites-list">
+            <li>
+              <div class="avatar">TH</div>
+              <span>Thomas</span>
+            </li>
+            <li>
+              <div class="avatar">CO</div>
+              <span>Couscous</span>
+            </li>
+            <li>
+              <div class="avatar">B6</div>
+              <span>Bot6</span>
+            </li>
+            <li>
+              <div class="avatar">BA</div>
+              <span>Babouche</span>
+            </li>
+          </ul>
+        </section>
 
-      <!-- Liste des conversations -->
-      <section>
-        <h2>CONVERSATIONS <span>12</span></h2>
+        <!-- Liste des conversations -->
+        <section class="conversations-section">
+          <div class="conversations-header">
+            <h2>CONVERSATIONS</h2>
+            <span class="conversations-count">12</span>
+          </div>
 
-        <ul>
-          <li>
-            <span>KM</span>
-            <div>
-              <h3>Mbappé</h3>
-              <p>On se cale ça pour jeudi ?</p>
-            </div>
-            <time>5 min</time>
-            <span>2</span>
-          </li>
+          <ul class="conversations-list">
+            <li class="conversation-item active">
+              <div class="avatar avatar-dark">KM</div>
+              <div class="conversation-content">
+                <div class="conversation-title-row">
+                  <span class="contact-name">Mbappé</span>
+                  <span class="conversation-time">5 min</span>
+                </div>
+                <div class="conversation-preview-row">
+                  <p class="preview-text">On se cale ça pour jeudi ?</p>
+                  <span class="badge-unread">2</span>
+                </div>
+              </div>
+            </li>
 
-          <li>
-            <span>CO</span>
-            <div>
-              <h3>Couscous</h3>
-              <p>Vous : j'arrive dans 10</p>
-            </div>
-            <time>1 h</time>
-          </li>
+            <li class="conversation-item">
+              <div class="avatar">CO</div>
+              <div class="conversation-content">
+                <div class="conversation-title-row">
+                  <span class="contact-name">Couscous</span>
+                  <span class="conversation-time">1 h</span>
+                </div>
+                <div class="conversation-preview-row">
+                  <p class="preview-text">Vous : j'arrive dans 10</p>
+                </div>
+              </div>
+            </li>
 
-          <li>
-            <span>B6</span>
-            <div>
-              <h3>Bot6</h3>
-              <p>Sauvegarde terminée</p>
-            </div>
-            <time>Hier</time>
-          </li>
+            <li class="conversation-item">
+              <div class="avatar">B6</div>
+              <div class="conversation-content">
+                <div class="conversation-title-row">
+                  <span class="contact-name">Bot6</span>
+                  <span class="conversation-time">Hier</span>
+                </div>
+                <div class="conversation-preview-row">
+                  <p class="preview-text">Sauvegarde terminée</p>
+                </div>
+              </div>
+            </li>
 
-          <li>
-            <span>BA</span>
-            <div>
-              <h3>Babouche</h3>
-              <p>Photo</p>
-            </div>
-            <time>Lun.</time>
-          </li>
+            <li class="conversation-item">
+              <div class="avatar">BA</div>
+              <div class="conversation-content">
+                <div class="conversation-title-row">
+                  <span class="contact-name">Babouche</span>
+                  <span class="conversation-time">Lun.</span>
+                </div>
+                <div class="conversation-preview-row">
+                  <p class="preview-text">Photo</p>
+                </div>
+              </div>
+            </li>
 
-          <li>
-            <span>TH</span>
-            <div>
-              <h3>Thomas</h3>
-              <p>Vous : noté, merci</p>
-            </div>
-            <time>3 j</time>
-          </li>
-        </ul>
-      </section>
+            <li class="conversation-item">
+              <div class="avatar">TH</div>
+              <div class="conversation-content">
+                <div class="conversation-title-row">
+                  <span class="contact-name">Thomas</span>
+                  <span class="conversation-time">3 j</span>
+                </div>
+                <div class="conversation-preview-row">
+                  <p class="preview-text">Vous : noté, merci</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
 
-      <button type="button">NOUVELLE CONVERSATION +</button>
+      <!-- Bouton nouvelle conversation -->
+      <button type="button" class="btn-new-conversation">
+        <span>NOUVELLE CONVERSATION</span>
+        <span class="btn-plus">+</span>
+      </button>
+
     </aside>
 
     <!-- Zone de discussion active -->
-    <section>
-      <!-- Contact actif -->
-      <header>
-        <span>KM</span>
-        <h2>Mbappé</h2>
+    <section class="chat-area">
+
+      <!-- En-tête contact -->
+      <header class="chat-header">
+        <div class="avatar avatar-dark">KM</div>
+        <h2 class="contact-name">Mbappé</h2>
       </header>
 
-      <!-- Historique des échanges -->
-      <div>
-        <p>AUJOURD'HUI</p>
-
-        <!-- Messages reçus et envoyés -->
-        <div>
-          <p>Salut, tu as regardé le planning de la semaine ?</p>
-          <time>14:02</time>
+      <!-- Historique des messages -->
+      <div class="chat-messages">
+        <div class="date-divider">
+          <span>AUJOURD'HUI</span>
         </div>
 
-        <div>
-          <p>Oui, jeudi après-midi ça me va.</p>
-          <time>14:05</time>
-          <span>— ENVOYÉ</span>
+        <div class="message-row message-received">
+          <div class="message-bubble">
+            <p class="message-text">Salut, tu as regardé le planning de la semaine ?</p>
+            <span class="message-meta">14:02</span>
+          </div>
         </div>
 
-        <div>
-          <p>Parfait. Je bloque 14 h – 16 h et j'invite Thomas.</p>
-          <time>14:06</time>
+        <div class="message-row message-sent">
+          <div class="message-bubble">
+            <p class="message-text">Oui, jeudi après-midi ça me va.</p>
+            <span class="message-meta">14:05 — ENVOYÉ</span>
+          </div>
         </div>
 
-        <div>
-          <p>On se cale ça pour jeudi ?</p>
-          <time>14:12</time>
+        <div class="message-row message-received">
+          <div class="message-bubble">
+            <p class="message-text">Parfait. Je bloque 14 h – 16 h et j'invite Thomas.</p>
+            <span class="message-meta">14:06</span>
+          </div>
+        </div>
+
+        <div class="message-row message-received">
+          <div class="message-bubble">
+            <p class="message-text">On se cale ça pour jeudi ?</p>
+            <span class="message-meta">14:12</span>
+          </div>
         </div>
       </div>
 
-      <!-- Formulaire d'envoi -->
-      <form>
-        <button type="button">+</button>
-        <button type="button">🎙</button>
-        <input type="text" placeholder="Écrire un message" required>
-        <button type="submit">ENVOYER &rarr;</button>
-      </form>
+      <!-- Barre de saisie en bas -->
+      <footer class="chat-input-bar">
+        <form class="chat-form">
+          <button type="button" class="btn-attach" aria-label="Ajouter un fichier">+</button>
+          <button type="button" class="btn-mic" aria-label="Message vocal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+          <input type="text" class="input-message" placeholder="Écrire un message" required>
+          <button type="submit" class="btn-send">
+            <span>ENVOYER</span>
+            <span class="send-arrow">&rarr;</span>
+          </button>
+        </form>
+      </footer>
+
     </section>
+
   </main>
 
 </body>
