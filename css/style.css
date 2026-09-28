@@ -132,6 +132,7 @@ body.page-messagerie {
 }
 
 .app-header .logo {
+  text-decoration: none;
   font-size: 1.125rem;
   font-weight: 900;
   letter-spacing: 0.2em;
@@ -175,6 +176,7 @@ body.page-messagerie {
 }
 
 .user-status {
+  text-decoration: none;
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: var(--espacement-lettres);
@@ -182,6 +184,7 @@ body.page-messagerie {
 }
 
 .avatar-header {
+  text-decoration: none;
   width: 42px;
   height: 42px;
   border-radius: 50%;

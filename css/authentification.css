@@ -24,6 +24,11 @@
 }
 
 /* ---- Marque en haut à gauche ---- */
+.auth__marque a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .auth__marque {
   font-size: var(--taille-s);
   font-weight: 800;
