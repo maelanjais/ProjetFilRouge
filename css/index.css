@@ -549,3 +549,230 @@ body.page-messagerie {
 .send-arrow {
   font-size: var(--taille-s);
 }
+
+
+/* ==========================================================================
+   Volet latéral coulissant des Paramètres (Settings Drawer)
+   ========================================================================== */
+
+/* Curseur pointer et effet de survol sur le profil dans l'en-tête */
+.header-user {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.header-user:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Voile d'arrière-plan (Overlay) */
+.panneau-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 100;
+}
+
+.panneau-overlay.actif {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Volet coulissant depuis la droite */
+.panneau-parametres {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  height: 100vh;
+  background-color: #ffffff;
+  box-shadow: -6px 0 25px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 101;
+}
+
+.panneau-parametres.actif {
+  transform: translateX(0);
+}
+
+.panneau-parametres__entete {
+  height: 68px;
+  background-color: var(--couleur-sombre);
+  color: var(--couleur-texte-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--espace-l);
+  flex-shrink: 0;
+}
+
+.panneau-parametres__entete h2 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: var(--espacement-lettres);
+  text-transform: uppercase;
+  color: var(--couleur-texte-inverse);
+}
+
+.btn-fermer {
+  background: none;
+  border: none;
+  color: var(--couleur-texte-inverse);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: var(--espace-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.btn-fermer:hover {
+  opacity: 0.7;
+}
+
+.panneau-parametres__contenu {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--espace-l);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-l);
+}
+
+.section-parametre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-m);
+  padding-bottom: var(--espace-m);
+  border-bottom: var(--epaisseur-trait) solid var(--couleur-bordure);
+}
+
+.section-parametre:last-of-type {
+  border-bottom: none;
+}
+
+.section-parametre h3 {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: var(--espacement-lettres);
+  color: var(--couleur-texte-discret);
+  text-transform: uppercase;
+}
+
+.profil-apercu {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-m);
+}
+
+.avatar-grand {
+  width: 56px;
+  height: 56px;
+  font-size: 1.125rem;
+  background-color: var(--couleur-primaire);
+  color: var(--couleur-texte-inverse);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.profil-nom {
+  font-weight: 700;
+  color: var(--couleur-texte);
+}
+
+.profil-email {
+  font-size: var(--taille-xs);
+  color: var(--couleur-texte-discret);
+}
+
+.champ-parametre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-xs);
+}
+
+.champ-parametre label {
+  font-size: var(--taille-xs);
+  font-weight: 700;
+  color: var(--couleur-texte);
+}
+
+.champ-parametre input,
+.champ-parametre select {
+  padding: 8px 12px;
+  border: var(--epaisseur-trait) solid var(--couleur-bordure);
+  border-radius: 8px;
+  font-size: var(--taille-s);
+  background-color: var(--couleur-fond);
+  color: var(--couleur-texte);
+  outline: none;
+  font-family: inherit;
+}
+
+.champ-parametre input:focus,
+.champ-parametre select:focus {
+  border-color: var(--couleur-primaire);
+}
+
+.option-bascule {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-xs);
+  font-size: var(--taille-s);
+  color: var(--couleur-texte);
+  cursor: pointer;
+}
+
+.option-bascule input[type="checkbox"] {
+  accent-color: var(--couleur-primaire);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.panneau-parametres__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-m);
+  margin-top: auto;
+  padding-top: var(--espace-m);
+}
+
+.panneau-parametres__actions .bouton-principal {
+  text-align: center;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.btn-deconnexion {
+  text-align: center;
+  color: #c0392b;
+  font-size: var(--taille-s);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.btn-deconnexion:hover {
+  background-color: #fceae8;
+  color: #a93226;
+}
