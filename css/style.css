@@ -7,10 +7,25 @@
   --couleur-primaire-foncee: #3d4d0d;
   --couleur-sombre: #1c1c1c;
   --couleur-fond: #f6f3f2;
+  --couleur-surface: #ffffff;
   --couleur-texte: #1c1c1c;
   --couleur-texte-inverse: #ffffff;
+  --couleur-texte-inverse-discret: rgba(255, 255, 255, 0.9);
   --couleur-texte-discret: #626262;
   --couleur-bordure: #d4d4cc;
+  --couleur-bordure-accentuee: #b8c1b2;
+
+  /* Couleurs de survol et de superposition */
+  --couleur-survol: #f7f9f6;
+  --couleur-survol-leger: rgba(0, 0, 0, 0.05);
+  --couleur-survol-inverse: rgba(255, 255, 255, 0.08);
+  --couleur-voile: rgba(0, 0, 0, 0.45);
+  --ombre-panneau: -6px 0 25px rgba(0, 0, 0, 0.18);
+
+  /* Couleurs d'action destructrice (déconnexion) */
+  --couleur-danger: #c0392b;
+  --couleur-danger-foncee: #a93226;
+  --couleur-danger-fond: #fceae8;
 
   /* Couleurs spécifiques à la messagerie (index.html) */
   --couleur-fond-clair: #e9ede5;
@@ -18,29 +33,61 @@
   --couleur-bulle-envoyee: var(--couleur-primaire);
   --couleur-statut: #9da398;
 
-  /* Polices*/
-  --police-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Polices */
+  --police-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
 
   /* Tailles de texte */
+  --taille-micro: 0.625rem;
+  --taille-xxxs: 0.6875rem;
+  --taille-xxs: 0.75rem;
   --taille-xs: 0.8125rem;
   --taille-s: 0.875rem;
   --taille-m: 1rem;
   --taille-l: 1.125rem;
+  --taille-xl: 1.375rem;
+  --taille-croix: 1.75rem;
   --taille-xxl: 2.5rem;
-  --taille-geante: 4rem; 
+  --taille-geante: 4rem;
 
   /* Espacements */
+  --espace-xxs: 0.25rem;
   --espace-xs: 0.5rem;
+  --espace-s: 0.75rem;
   --espace-m: 1rem;
   --espace-l: 1.5rem;
   --espace-xl: 2rem;
   --espace-xxl: 4rem;
 
+  /* Rayons d'arrondi */
+  --rayon-s: 8px;
+  --rayon-m: 12px;
+  --rayon-l: 16px;
+  --rayon-pilule: 20px;
+  --rayon-cercle: 50%;
+
+  /* Dimensions des composants de la messagerie */
+  --hauteur-entete: 4.25rem;
+  --hauteur-entete-discussion: 4.625rem;
+  --largeur-barre-laterale: 20.625rem;
+  --largeur-panneau: 23.75rem;
+  --taille-avatar-petit: 2.625rem;
+  --taille-avatar: 3rem;
+  --taille-avatar-grand: 3.5rem;
+  --taille-badge: 1.25rem;
+  --taille-bouton-icone: 2.25rem;
+  --taille-case-a-cocher: 1rem;
+
+  /* Durées d'animation */
+  --duree-transition: 0.2s;
+  --duree-panneau: 0.3s;
+
   /* Détails */
   --epaisseur-trait: 1px;
   --epaisseur-accent: 3px;
   --espacement-lettres: 0.12em;
-  --hauteur-cible-tactile: 2.75rem; 
+  --espacement-lettres-large: 0.2em;
+  --hauteur-cible-tactile: 2.75rem;
 }
 
 /* ---- Réinitialisation pour les espacements ---- */
