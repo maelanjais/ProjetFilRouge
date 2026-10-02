@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/index.css">
   <script type="module" src="js/interface/parametres.js"></script>
+  <script type="module" src="js/interface/contacts.js"></script>
 </head>
 <body class="page-messagerie">
 
@@ -45,16 +46,31 @@
     <aside class="barre-laterale">
 
       <div class="barre-laterale__haut">
-        <!-- Barre de recherche -->
-        <div class="recherche">
-          <svg class="recherche__icone" width="16" height="16" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2" stroke-linecap="round"
-               stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="search" id="champ-recherche" class="recherche__champ"
-                 placeholder="Rechercher une conversation">
+
+        <!-- Recherche et accès à la gestion des contacts, sur une même ligne -->
+        <div class="barre-laterale__recherche-et-contacts">
+          <div class="recherche">
+            <svg class="recherche__icone" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search" id="champ-recherche" class="recherche__champ"
+                   placeholder="Rechercher une conversation">
+          </div>
+
+          <button type="button" class="bouton-contacts" id="bouton-ouvrir-contacts"
+                  aria-label="Gérer les contacts">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true" focusable="false">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </button>
         </div>
 
         <!-- Liste des favoris -->
@@ -290,6 +306,39 @@
         <a href="connexion.html" class="bouton-deconnexion">Se déconnecter</a>
       </div>
     </form>
+  </aside>
+
+  <!-- Voile d'arrière-plan derrière le panneau des contacts -->
+  <div class="panneau-voile" id="voile-contacts"></div>
+
+  <!-- Panneau latéral coulissant de la liste des contacts -->
+  <aside class="panneau-contacts" id="panneau-contacts">
+    <div class="panneau-contacts__entete">
+      <h2 class="panneau-contacts__titre">Contacts</h2>
+      <button type="button" class="bouton-fermer" id="bouton-fermer-contacts"
+              aria-label="Fermer les contacts">&times;</button>
+    </div>
+
+    <div class="panneau-contacts__contenu">
+      <ul class="panneau-contacts__liste">
+        <li class="panneau-contacts__item">
+          <span class="avatar">TH</span>
+          <span class="panneau-contacts__nom">Thomas</span>
+        </li>
+        <li class="panneau-contacts__item">
+          <span class="avatar">CO</span>
+          <span class="panneau-contacts__nom">Couscous</span>
+        </li>
+        <li class="panneau-contacts__item">
+          <span class="avatar">B6</span>
+          <span class="panneau-contacts__nom">Bot6</span>
+        </li>
+        <li class="panneau-contacts__item">
+          <span class="avatar">BA</span>
+          <span class="panneau-contacts__nom">Babouche</span>
+        </li>
+      </ul>
+    </div>
   </aside>
 
 </body>

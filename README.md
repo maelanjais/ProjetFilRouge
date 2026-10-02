@@ -42,6 +42,7 @@ css/
 js/
   interface/           # Manipulation du DOM et événements (affichage)
     parametres.js      # Panneau latéral des paramètres
+    contacts.js        # Panneau latéral de la liste des contacts
   donnees/             # Appels Supabase uniquement, sans DOM
 maquettes/             # Maquettes des écrans (connexion, inscription, accueil)
 ```

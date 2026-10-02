@@ -135,15 +135,24 @@
   flex-direction: column;
 }
 
+/* Ligne recherche + bouton contacts : la recherche prend toute la place restante */
+.barre-laterale__recherche-et-contacts {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-xs);
+  margin-bottom: var(--espace-l);
+}
+
 /* Barre de recherche */
 .recherche {
+  flex: 1;
+  min-width: 0;
   background-color: var(--couleur-fond-clair);
   border-radius: var(--rayon-l);
   display: flex;
   align-items: center;
   padding: var(--espace-s) var(--espace-m);
   gap: var(--espace-xs);
-  margin-bottom: var(--espace-l);
 }
 
 .recherche__icone {
@@ -162,6 +171,27 @@
 
 .recherche__champ::placeholder {
   color: var(--couleur-texte-discret);
+}
+
+/* Bouton d'ouverture de la gestion des contacts (icône seule) */
+.bouton-contacts {
+  flex-shrink: 0;
+  width: var(--hauteur-cible-tactile);
+  height: var(--hauteur-cible-tactile);
+  border: none;
+  border-radius: var(--rayon-cercle);
+  background-color: var(--couleur-fond-clair);
+  color: var(--couleur-texte-discret);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--duree-transition), color var(--duree-transition);
+}
+
+.bouton-contacts:hover {
+  background-color: var(--couleur-bordure);
+  color: var(--couleur-texte);
 }
 
 /* Titres de section de la barre latérale (Favoris, Conversations) */
@@ -514,9 +544,9 @@
   font-size: var(--taille-s);
 }
 
-/* ---- Panneau coulissant des paramètres ---- */
-/* Voile sombre derrière le panneau ; visibility évite qu'il capte les clics
-   lorsqu'il est transparent */
+/* ---- Panneaux coulissants (paramètres et contacts) ----
+   Les deux panneaux partagent la même structure : voile, en-tête sombre,
+   contenu défilant. Leurs règles communes sont donc regroupées. */
 .panneau-voile {
   position: fixed;
   top: 0;
@@ -536,7 +566,8 @@
 }
 
 /* Panneau caché hors écran à droite, glisse vers la gauche à l'ouverture */
-.panneau-parametres {
+.panneau-parametres,
+.panneau-contacts {
   position: fixed;
   top: 0;
   right: 0;
@@ -552,11 +583,13 @@
   z-index: 101;
 }
 
-.panneau-parametres.actif {
+.panneau-parametres.actif,
+.panneau-contacts.actif {
   transform: translateX(0);
 }
 
-.panneau-parametres__entete {
+.panneau-parametres__entete,
+.panneau-contacts__entete {
   height: var(--hauteur-entete);
   background-color: var(--couleur-sombre);
   color: var(--couleur-texte-inverse);
@@ -567,7 +600,8 @@
   flex-shrink: 0;
 }
 
-.panneau-parametres__titre {
+.panneau-parametres__titre,
+.panneau-contacts__titre {
   font-size: var(--taille-l);
   font-weight: 800;
   letter-spacing: var(--espacement-lettres);
@@ -589,7 +623,8 @@
   opacity: 0.7;
 }
 
-.panneau-parametres__contenu {
+.panneau-parametres__contenu,
+.panneau-contacts__contenu {
   flex: 1;
   overflow-y: auto;
   padding: var(--espace-l);
@@ -700,4 +735,37 @@
 .bouton-deconnexion:hover {
   background-color: var(--couleur-danger-fond);
   color: var(--couleur-danger-foncee);
+}
+
+/* ---- Liste du panneau des contacts ---- */
+.panneau-contacts__liste {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-xxs);
+}
+
+/* Même présentation qu'une conversation de la barre latérale, pour la cohérence */
+.panneau-contacts__item {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-s);
+  min-height: var(--hauteur-cible-tactile);
+  padding: var(--espace-xs) var(--espace-s);
+  border-radius: var(--rayon-l);
+  transition: background-color var(--duree-transition);
+}
+
+.panneau-contacts__item:hover {
+  background-color: var(--couleur-survol);
+}
+
+.panneau-contacts__nom {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--taille-s);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

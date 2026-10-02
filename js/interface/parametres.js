@@ -30,9 +30,7 @@ function fermerParametresAvecEchap(evenement) {
   }
 }
 
-// Enregistre les paramètres sans recharger la page. Le bouton « Enregistrer »
-// et la touche Entrée passent tous deux par cet événement « submit ».
-// L'enregistrement réel sera branché sur Supabase à la séance 6.
+// Enregistre les paramètres sans recharger la page.
 function enregistrerParametres(evenement) {
   evenement.preventDefault();
   fermerParametres();
