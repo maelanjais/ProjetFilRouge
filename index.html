@@ -10,6 +10,7 @@
   <title>Accueil - Messagerie</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/index.css">
+  <script type="module" src="js/interface/parametres.js"></script>
 </head>
 <body class="page-messagerie">
 
@@ -242,10 +243,10 @@
     <div class="panneau-parametres__entete">
       <h2 class="panneau-parametres__titre">Paramètres</h2>
       <button type="button" class="bouton-fermer" id="bouton-fermer-parametres"
-             >&times;</button>
+              aria-label="Fermer les paramètres">&times;</button>
     </div>
 
-    <form class="panneau-parametres__contenu" onsubmit="event.preventDefault();">
+    <form class="panneau-parametres__contenu" id="formulaire-parametres">
       <!-- Section Profil -->
       <section class="section-parametre">
         <h3 class="section-parametre__titre">Profil utilisateur</h3>
@@ -283,44 +284,13 @@
 
       <!-- Section Actions -->
       <div class="panneau-parametres__actions">
-        <button type="button" class="bouton-principal" id="bouton-enregistrer-parametres">
+        <button type="submit" class="bouton-principal">
           Enregistrer
         </button>
         <a href="connexion.html" class="bouton-deconnexion">Se déconnecter</a>
       </div>
     </form>
   </aside>
-
-  <!-- Script temporaire d'ouverture / fermeture du panneau des paramètres -->
-  <script>
-    const btnProfil = document.getElementById("bouton-ouvrir-parametres");
-    const panneauParametres = document.getElementById("panneau-parametres");
-    const btnFermer = document.getElementById("bouton-fermer-parametres");
-    const overlay = document.getElementById("voile-parametres");
-    const btnEnregistrer = document.getElementById("bouton-enregistrer-parametres");
-
-    function ouvrirParametres() {
-      panneauParametres.classList.add("actif");
-      overlay.classList.add("actif");
-    }
-
-    function fermerParametres() {
-      panneauParametres.classList.remove("actif");
-      overlay.classList.remove("actif");
-    }
-
-    // Un vrai <button> gère déjà Entrée et Espace : le clic suffit
-    btnProfil.addEventListener("click", ouvrirParametres);
-    btnFermer.addEventListener("click", fermerParametres);
-    overlay.addEventListener("click", fermerParametres);
-    btnEnregistrer.addEventListener("click", fermerParametres);
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && panneauParametres.classList.contains("actif")) {
-        fermerParametres();
-      }
-    });
-  </script>
 
 </body>
 </html>
