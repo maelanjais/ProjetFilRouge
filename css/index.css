@@ -745,7 +745,6 @@
   gap: var(--espace-xxs);
 }
 
-/* Même présentation qu'une conversation de la barre latérale, pour la cohérence */
 .panneau-contacts__item {
   display: flex;
   align-items: center;
