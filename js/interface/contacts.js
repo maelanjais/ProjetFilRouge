@@ -4,6 +4,7 @@
 // ---- Éléments du DOM ----
 const boutonOuvrirContacts = document.getElementById('bouton-ouvrir-contacts');
 const boutonFermerContacts = document.getElementById('bouton-fermer-contacts');
+const boutonNouvelleConversation = document.getElementById('bouton-nouvelle-conversation');
 const panneauContacts = document.getElementById('panneau-contacts');
 const voileContacts = document.getElementById('voile-contacts');
 
@@ -32,5 +33,6 @@ function fermerContactsAvecEchap(evenement) {
 // ---- Branchement des événements ----
 boutonOuvrirContacts.addEventListener('click', ouvrirContacts);
 boutonFermerContacts.addEventListener('click', fermerContacts);
+boutonNouvelleConversation.addEventListener('click',ouvrirContacts);
 voileContacts.addEventListener('click', fermerContacts);
 document.addEventListener('keydown', fermerContactsAvecEchap);
