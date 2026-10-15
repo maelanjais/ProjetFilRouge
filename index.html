@@ -13,7 +13,7 @@
   <script type="module" src="js/interface/parametres.js" defer></script>
   <script type="module" src="js/interface/contacts.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module" src="js/donnees/config-supabase.js"></script>
+  <script type="module" src="js/interface/index.js"></script>
 </head>
 <body class="page-messagerie">
 
@@ -305,7 +305,8 @@
         <button type="submit" class="bouton-principal">
           Enregistrer
         </button>
-        <a href="connexion.html" class="bouton-deconnexion">Se déconnecter</a>
+        <a href="connexion.html" class="bouton-deconnexion" id="lien-deconnexion">Se déconnecter</a>
+        <p class="panneau-parametres__erreur" id="message-erreur" role="alert"></p>
       </div>
     </form>
   </aside>

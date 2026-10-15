@@ -1,4 +1,4 @@
-// parametres.js — ouverture, fermeture et enregistrement du panneau latéral
+// parametres.js - ouverture, fermeture et enregistrement du panneau latéral
 // des paramètres de la page de messagerie.
 
 // ---- Éléments du DOM ----
