@@ -12,13 +12,13 @@ const voileContacts = document.getElementById('voile-contacts');
 const CLASSE_ACTIF = 'actif';
 
 // Affiche le panneau des contacts et le voile d'arrière-plan.
-function ouvrirContacts() {
+export function ouvrirContacts() {
   panneauContacts.classList.add(CLASSE_ACTIF);
   voileContacts.classList.add(CLASSE_ACTIF);
 }
 
 // Masque le panneau des contacts et le voile d'arrière-plan.
-function fermerContacts() {
+export function fermerContacts() {
   panneauContacts.classList.remove(CLASSE_ACTIF);
   voileContacts.classList.remove(CLASSE_ACTIF);
 }

@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="css/index.css">
   <script type="module" src="js/interface/parametres.js" defer></script>
   <script type="module" src="js/interface/contacts.js" defer></script>
+  <script type="module" src="js/interface/discussion.js" defer></script>
+  <script type="module" src="js/interface/conversations.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="js/interface/index.js"></script>
 </head>
@@ -272,7 +274,7 @@
           <span>Afficher les aperçus de messages</span>
         </label>
         <label class="option-bascule">
-          <input type="checkbox" class="option-bascule__case">
+          <input type="checkbox" class="option-bascule__case" id="case-mode-sombre">
           <span>Mode sombre</span>
         </label>
       </section>

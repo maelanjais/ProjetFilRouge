@@ -1,21 +1,61 @@
-// index.js - gère la déconnexion de l'utilisateur et le contrôle d'accès
-// à la page de messagerie.
+// index.js — gère le contrôle d'accès, la synchronisation du profil utilisateur
+// et la déconnexion sur la page de messagerie.
+
 import { deconnecterUtilisateur, recupererSession } from '../donnees/authentification.js';
 import { afficherErreur } from './utils.js';
 
 // ---- Éléments du DOM ----
 const lienDeconnexion = document.getElementById('lien-deconnexion');
 
+// Met à jour l'affichage du profil utilisateur dans l'en-tête et les paramètres.
+function afficherProfilUtilisateur(utilisateur) {
+  if (!utilisateur) return;
+
+  const pseudo = utilisateur.user_metadata?.nom_utilisateur
+    || utilisateur.email?.split('@')[0]
+    || 'Utilisateur';
+  const initiales = pseudo.slice(0, 2).toUpperCase();
+
+  // En-tête de l'application
+  const enteteNom = document.querySelector('.entete-profil__nom');
+  if (enteteNom) enteteNom.textContent = pseudo;
+
+  const avatarsProfil = document.querySelectorAll('.entete-profil .avatar, .profil-apercu .avatar');
+  avatarsProfil.forEach((avatar) => {
+    avatar.textContent = initiales;
+  });
+
+  // Panneau des paramètres
+  const apercuNom = document.querySelector('.profil-apercu__nom');
+  if (apercuNom) apercuNom.textContent = pseudo;
+
+  const apercuCourriel = document.querySelector('.profil-apercu__courriel');
+  if (apercuCourriel && utilisateur.email) {
+    apercuCourriel.textContent = utilisateur.email;
+  }
+
+  const champPseudo = document.getElementById('param-pseudo');
+  if (champPseudo) champPseudo.value = pseudo;
+}
+
 // Redirige vers la page de connexion si aucun utilisateur n'est connecté.
 async function verifierUtilisateurConnecte() {
-  const { data, error } = await recupererSession();
-  if (error || !data.session) {
-    window.location.href = 'connexion.html';
+  // Permet de tester ou prévisualiser l'interface avec ?demo dans l'URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('demo')) {
+    return;
   }
+
+  const { data, error } = await recupererSession();
+  if (error || !data?.session) {
+    window.location.href = 'connexion.html';
+    return;
+  }
+
+  afficherProfilUtilisateur(data.session.user);
 }
 
 // Déconnecte l'utilisateur puis le renvoie vers la page de connexion.
-// Le lien garde son href pour fonctionner même si le JS ne se charge pas.
 async function gererDeconnexion(evenement) {
   evenement.preventDefault();
   const { error } = await deconnecterUtilisateur();
@@ -27,6 +67,8 @@ async function gererDeconnexion(evenement) {
 }
 
 // ---- Branchement des événements ----
-lienDeconnexion.addEventListener('click', gererDeconnexion);
+if (lienDeconnexion) {
+  lienDeconnexion.addEventListener('click', gererDeconnexion);
+}
 
 verifierUtilisateurConnecte();

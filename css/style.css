@@ -150,3 +150,17 @@ a:hover {
 .bouton-principal:hover {
   background-color: var(--couleur-primaire-foncee);
 }
+
+/* Thème sombre activable via le panneau des paramètres */
+body.theme-sombre {
+  --couleur-fond: #121510;
+  --couleur-surface: #1a1e16;
+  --couleur-texte: #f1f3ee;
+  --couleur-texte-discret: #9da398;
+  --couleur-bordure: #2c3326;
+  --couleur-bordure-accentuee: #3d4635;
+  --couleur-survol: #232a1e;
+  --couleur-survol-leger: rgba(255, 255, 255, 0.06);
+  --couleur-fond-clair: #20271b;
+  --couleur-bulle-recue: #242c1e;
+}

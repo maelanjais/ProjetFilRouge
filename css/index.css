@@ -737,6 +737,7 @@
   min-height: var(--hauteur-cible-tactile);
   padding: var(--espace-xs) var(--espace-s);
   border-radius: var(--rayon-l);
+  cursor: pointer;
   transition: background-color var(--duree-transition);
 }
 
@@ -753,3 +754,45 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Conversation masquée par le filtre de recherche */
+.conversation-item.masque {
+  display: none;
+}
+
+/* Pièces jointes et messages vocaux */
+.message__audio {
+  max-width: 100%;
+  height: 38px;
+  border-radius: var(--rayon-pilule);
+  margin-top: var(--espace-xxs);
+  margin-bottom: var(--espace-xxs);
+}
+
+.message__image {
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: var(--rayon-m);
+  object-fit: cover;
+  display: block;
+  margin-top: var(--espace-xxs);
+  margin-bottom: var(--espace-xxs);
+}
+
+/* Animation et style du bouton micro en cours d'enregistrement */
+.bouton-micro.enregistrement {
+  color: #ef4444;
+  animation: pulsation-micro 1s infinite alternate ease-in-out;
+}
+
+@keyframes pulsation-micro {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 0.6;
+  }
+}
+

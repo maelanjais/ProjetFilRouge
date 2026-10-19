@@ -43,7 +43,13 @@ js/
   interface/           # Manipulation du DOM et événements (affichage)
     parametres.js      # Panneau latéral des paramètres
     contacts.js        # Panneau latéral de la liste des contacts
+    discussion.js      # Zone de discussion, envoi des messages et vocal
+    conversations.js   # Liste des conversations, sélection et recherche
+    index.js           # Contrôle d'accès et synchronisation du profil
+    utils.js           # Messages d'erreur et utilitaires
   donnees/             # Appels Supabase uniquement, sans DOM
+    config-supabase.js # Client Supabase et configuration
+    authentification.js# Fonctions d'authentification Supabase Auth
 maquettes/             # Maquettes des écrans (connexion, inscription, accueil)
 ```
 
