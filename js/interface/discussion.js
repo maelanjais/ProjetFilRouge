@@ -1,6 +1,9 @@
 // discussion.js — gestion de la zone de discussion active :
-// envoi de messages texte, messages vocaux (micro), pièces jointes
-// et défilement automatique.
+// envoi de messages texte, messages vocaux (micro), pièces jointes,
+// défilement automatique et synchronisation avec Supabase.
+
+import { envoyerMessageSupabase } from '../donnees/messages.js';
+import { recupererSession } from '../donnees/authentification.js';
 
 // ---- Éléments du DOM ----
 const conteneurMessages = document.querySelector('.discussion__messages');
@@ -10,6 +13,9 @@ const boutonMicro = document.querySelector('.bouton-micro');
 const boutonJoindre = document.querySelector('.bouton-joindre');
 const enteteNom = document.querySelector('.discussion__nom');
 const enteteAvatar = document.querySelector('.discussion__entete .avatar');
+
+// Identifiant du salon actif (1 par défaut)
+window.salonIdActuel = 1;
 
 // État de l'enregistreur vocal
 let mediaRecorder = null;
@@ -25,10 +31,10 @@ champFichier.style.display = 'none';
 document.body.appendChild(champFichier);
 
 // Renvoie l'heure actuelle au format HH:MM.
-export function formaterHeureCourante() {
-  const maintenant = new Date();
-  const heures = String(maintenant.getHours()).padStart(2, '0');
-  const minutes = String(maintenant.getMinutes()).padStart(2, '0');
+export function formaterHeureCourante(date = new Date()) {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const heures = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
   return `${heures}:${minutes}`;
 }
 
@@ -51,6 +57,7 @@ export function creerElementMessage({
   texte = '',
   audioUrl = '',
   imageUrl = '',
+  auteurPseudo = '',
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
@@ -58,6 +65,10 @@ export function creerElementMessage({
   elementMessage.className = `message ${estEnvoye ? 'message--envoye' : 'message--recu'}`;
 
   let contenuHtml = '';
+
+  if (!estEnvoye && auteurPseudo) {
+    contenuHtml += `<span class="message__auteur" style="font-weight:700;font-size:0.75rem;margin-bottom:2px;display:block;opacity:0.85;">${echapperHtml(auteurPseudo)}</span>`;
+  }
 
   if (texte) {
     contenuHtml += `<p class="message__texte">${echapperHtml(texte)}</p>`;
@@ -82,16 +93,16 @@ export function ajouterMessage({
   texte = '',
   audioUrl = '',
   imageUrl = '',
+  auteurPseudo = '',
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
   if (!conteneurMessages) return;
 
-  const element = creerElementMessage({ texte, audioUrl, imageUrl, estEnvoye, heure });
+  const element = creerElementMessage({ texte, audioUrl, imageUrl, auteurPseudo, estEnvoye, heure });
   conteneurMessages.appendChild(element);
   defilerEnBas();
 
-  // Événement personnalisé pour avertir les autres modules (conversations.js)
   const apercuTexte = texte || (audioUrl ? 'Message vocal 🎙️' : 'Photo 📷');
   document.dispatchEvent(new CustomEvent('message-ajoute', {
     detail: {
@@ -131,15 +142,47 @@ export function mettreAJourEnteteDiscussion(nom, initiales, classeAvatar = '') {
 
 // ---- Gestion des événements ----
 
-// 1. Envoi de message texte via le formulaire
+// 1. Envoi de message texte via le formulaire et synchronisation Supabase
 if (formulaireMessage) {
-  formulaireMessage.addEventListener('submit', (evenement) => {
+  formulaireMessage.addEventListener('submit', async (evenement) => {
     evenement.preventDefault();
     const texte = saisieMessage.value.trim();
     if (!texte) return;
 
-    ajouterMessage({ texte, estEnvoye: true });
     saisieMessage.value = '';
+
+    // Récupérer la session pour obtenir le pseudo et ID de l'utilisateur
+    let pseudo = 'Moi';
+    let userId = null;
+    try {
+      const { data } = await recupererSession();
+      if (data?.session?.user) {
+        userId = data.session.user.id;
+        pseudo = data.session.user.user_metadata?.nom_utilisateur
+          || data.session.user.email?.split('@')[0]
+          || 'Moi';
+      }
+    } catch (e) {
+      console.warn('Session non disponible :', e);
+    }
+
+    // Affichage local immédiat
+    ajouterMessage({ texte, estEnvoye: true, auteurPseudo: pseudo });
+
+    // Envoi dans Supabase si un salon est actif
+    if (window.salonIdActuel) {
+      try {
+        await envoyerMessageSupabase({
+          salonId: window.salonIdActuel,
+          contenu: texte,
+          auteurPseudo: pseudo,
+          auteurId: userId,
+        });
+      } catch (erreur) {
+        console.error('Erreur lors de l’envoi à Supabase :', erreur);
+      }
+    }
+
     saisieMessage.focus();
   });
 }
@@ -152,13 +195,11 @@ if (boutonMicro) {
       return;
     }
 
-    // Si un enregistrement est déjà en cours, on l'arrête
     if (estEnregistrementEnCours && mediaRecorder) {
       mediaRecorder.stop();
       return;
     }
 
-    // Sinon, on démarre un nouvel enregistrement
     try {
       fluxAudio = await navigator.mediaDevices.getUserMedia({ audio: true });
       morceauxAudio = [];
@@ -170,14 +211,31 @@ if (boutonMicro) {
         }
       });
 
-      mediaRecorder.addEventListener('stop', () => {
+      mediaRecorder.addEventListener('stop', async () => {
         const typeMime = mediaRecorder.mimeType || 'audio/webm';
         const blob = new Blob(morceauxAudio, { type: typeMime });
         const audioUrl = URL.createObjectURL(blob);
 
         ajouterMessage({ audioUrl, estEnvoye: true });
 
-        // Libérer le micro
+        // Synchronisation avec Supabase
+        if (window.salonIdActuel) {
+          try {
+            const { data } = await recupererSession();
+            const pseudo = data?.session?.user?.user_metadata?.nom_utilisateur
+              || data?.session?.user?.email?.split('@')[0]
+              || 'Moi';
+            await envoyerMessageSupabase({
+              salonId: window.salonIdActuel,
+              contenu: '[Message vocal 🎙️]',
+              auteurPseudo: pseudo,
+              auteurId: data?.session?.user?.id || null,
+            });
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+
         if (fluxAudio) {
           fluxAudio.getTracks().forEach((track) => track.stop());
           fluxAudio = null;
@@ -195,8 +253,8 @@ if (boutonMicro) {
       boutonMicro.title = 'Arrêter et envoyer le message vocal';
       saisieMessage.placeholder = 'Enregistrement en cours... Cliquez sur le micro pour envoyer';
     } catch (erreur) {
-      console.error('Erreur lors de l’accès au micro :', erreur);
-      alert('Impossible d’accéder au microphone. Vérifiez les autorisations.');
+      console.error('Erreur micro :', erreur);
+      alert('Impossible d’accéder au microphone.');
     }
   });
 }
@@ -217,5 +275,4 @@ champFichier.addEventListener('change', () => {
   champFichier.value = '';
 });
 
-// Défilement automatique au chargement initial
 defilerEnBas();

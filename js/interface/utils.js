@@ -7,6 +7,8 @@ const MESSAGES_ERREUR_AUTH = {
   user_already_exists: 'Un compte existe déjà avec ce courriel.',
   email_not_confirmed: 'Confirmez votre courriel avant de vous connecter.',
   weak_password: 'Mot de passe trop faible.',
+  email_address_invalid: 'Adresse courriel invalide. Vérifiez le format ou utilisez une adresse valide.',
+  over_email_send_rate_limit: 'Limite d’envois d’e-mails atteinte. Désactivez "Confirm email" dans Supabase.',
 };
 
 // Renvoie un message compréhensible pour une erreur Supabase ; message d'origine à défaut.

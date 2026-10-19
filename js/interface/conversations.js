@@ -1,12 +1,20 @@
-// conversations.js — gestion de la liste des conversations :
-// sélection, recherche, synchronisation avec les contacts et aperçus.
+// conversations.js — gestion de la liste des conversations et des salons Supabase :
+// sélection, recherche, synchronisation temps réel et contacts.
 
 import {
   chargerHistoriqueMessages,
   mettreAJourEnteteDiscussion,
   formaterHeureCourante,
+  ajouterMessage,
 } from './discussion.js';
 import { fermerContacts } from './contacts.js';
+import {
+  recupererMessagesParSalon,
+  ecouterNouveauxMessages,
+  arreterEcouteTempsReel,
+} from '../donnees/messages.js';
+import { recupererTousLesSalons } from '../donnees/salons.js';
+import { recupererSession } from '../donnees/authentification.js';
 
 // ---- Éléments du DOM ----
 const listeConversations = document.querySelector('.conversations__liste');
@@ -14,8 +22,10 @@ const champRecherche = document.getElementById('champ-recherche');
 const compteurConversations = document.querySelector('.conversations__compteur');
 const itemsContacts = document.querySelectorAll('.panneau-contacts__item');
 
-// Historique des messages par contact (données initiales en mémoire)
-const historiqueConversations = {
+let canalTempsReelActif = null;
+
+// Historique statique de secours si hors ligne
+const historiqueStatique = {
   'Mbappé': [
     { texte: 'Salut, tu as regardé le planning de la semaine ?', estEnvoye: false, heure: '14:02' },
     { texte: 'Oui, jeudi après-midi ça me va.', estEnvoye: true, heure: '14:05' },
@@ -44,98 +54,169 @@ const historiqueConversations = {
 // Renvoie le nom de la conversation active.
 export function recupererNomConversationActive() {
   const itemActif = document.querySelector('.conversation-item--active');
-  if (!itemActif) return 'Mbappé';
+  if (!itemActif) return 'Salon 1';
   const elementNom = itemActif.querySelector('.conversation-item__nom');
-  return elementNom ? elementNom.textContent.trim() : 'Mbappé';
+  return elementNom ? elementNom.textContent.trim() : 'Salon 1';
 }
 
-// Met à jour le compteur de conversations visibles dans l'en-tête de la liste.
+// Met à jour le compteur de conversations visibles.
 function mettreAJourCompteur() {
   if (!compteurConversations || !listeConversations) return;
   const visibles = listeConversations.querySelectorAll('.conversation-item:not(.masque)');
   compteurConversations.textContent = visibles.length;
 }
 
-// Active une conversation sélectionnée et charge ses messages.
+// Charge un salon Supabase avec ses vrais messages et active le temps réel.
+export async function chargerSalonSupabase(salonId, nomSalon) {
+  window.salonIdActuel = salonId;
+
+  if (canalTempsReelActif) {
+    arreterEcouteTempsReel(canalTempsReelActif);
+    canalTempsReelActif = null;
+  }
+
+  let pseudoActuel = '';
+  let userIdActuel = null;
+  try {
+    const { data } = await recupererSession();
+    if (data?.session?.user) {
+      userIdActuel = data.session.user.id;
+      pseudoActuel = data.session.user.user_metadata?.nom_utilisateur
+        || data.session.user.email?.split('@')[0]
+        || '';
+    }
+  } catch (e) {
+    console.warn(e);
+  }
+
+  const initiales = nomSalon.slice(0, 2).toUpperCase();
+  mettreAJourEnteteDiscussion(nomSalon, initiales, 'avatar--primaire');
+
+  // Chargement des messages depuis Supabase
+  const { data: messages, error } = await recupererMessagesParSalon(salonId);
+  if (!error && Array.isArray(messages)) {
+    const messagesFormates = messages.map((m) => {
+      const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
+        || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
+      return {
+        texte: m.contenu || '',
+        estEnvoye,
+        auteurPseudo: m.auteur_pseudo || 'Membre',
+        heure: formaterHeureCourante(m.date_creation),
+      };
+    });
+    chargerHistoriqueMessages(messagesFormates);
+  }
+
+  // Écoute des nouveaux messages en temps réel
+  try {
+    canalTempsReelActif = ecouterNouveauxMessages(salonId, (nouveauMsg) => {
+      const estDeMoi = (userIdActuel && nouveauMsg.auteur_id === userIdActuel)
+        || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
+
+      if (!estDeMoi) {
+        ajouterMessage({
+          texte: nouveauMsg.contenu || '',
+          estEnvoye: false,
+          auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
+          heure: formaterHeureCourante(nouveauMsg.date_creation),
+        });
+      }
+    });
+  } catch (err) {
+    console.warn('Temps réel non disponible :', err);
+  }
+}
+
+// Active une conversation sélectionnée dans la liste.
 export function activerConversation(elementItem) {
   if (!elementItem) return;
 
-  // Mise à jour de la classe active
   const ancienActif = document.querySelector('.conversation-item--active');
   if (ancienActif) {
     ancienActif.classList.remove('conversation-item--active');
   }
   elementItem.classList.add('conversation-item--active');
 
-  // Supprimer le badge de messages non lus si présent
   const badgeNonLu = elementItem.querySelector('.badge-non-lu');
   if (badgeNonLu) {
     badgeNonLu.remove();
   }
 
-  // Récupérer le nom et l'avatar du contact
+  const salonId = elementItem.dataset.salonId;
   const elementNom = elementItem.querySelector('.conversation-item__nom');
   const nom = elementNom ? elementNom.textContent.trim() : '';
 
-  const elementAvatar = elementItem.querySelector('.avatar');
-  const initiales = elementAvatar ? elementAvatar.textContent.trim() : nom.slice(0, 2).toUpperCase();
-  const classesAvatar = elementAvatar ? elementAvatar.className.replace('avatar', '').trim() : '';
+  if (salonId) {
+    chargerSalonSupabase(Number(salonId), nom);
+  } else {
+    // Si c'est un contact statique
+    window.salonIdActuel = null;
+    const elementAvatar = elementItem.querySelector('.avatar');
+    const initiales = elementAvatar ? elementAvatar.textContent.trim() : nom.slice(0, 2).toUpperCase();
+    const classesAvatar = elementAvatar ? elementAvatar.className.replace('avatar', '').trim() : '';
 
-  // Mettre à jour l'en-tête de la discussion
-  mettreAJourEnteteDiscussion(nom, initiales, classesAvatar);
-
-  // Charger les messages du contact
-  const messages = historiqueConversations[nom] || [];
-  chargerHistoriqueMessages(messages);
+    mettreAJourEnteteDiscussion(nom, initiales, classesAvatar);
+    const messages = historiqueStatique[nom] || [];
+    chargerHistoriqueMessages(messages);
+  }
 }
 
-// Crée un nouvel élément de conversation dans la liste s'il n'existe pas encore.
-function creerElementConversation(nom, initiales = '', classeAvatar = '') {
-  const init = initiales || nom.slice(0, 2).toUpperCase();
+// Crée un élément de salon Supabase pour la liste.
+function creerElementSalon(salon, estActif = false) {
   const li = document.createElement('li');
-  li.className = 'conversation-item';
+  li.className = `conversation-item ${estActif ? 'conversation-item--active' : ''}`;
+  li.dataset.salonId = salon.id;
+
+  const initiales = salon.nom.slice(0, 2).toUpperCase();
   li.innerHTML = `
-    <span class="avatar ${classeAvatar}">${init}</span>
+    <span class="avatar avatar--primaire">${initiales}</span>
     <div class="conversation-item__contenu">
       <div class="conversation-item__ligne">
-        <span class="conversation-item__nom">${nom}</span>
-        <span class="conversation-item__heure">À l'instant</span>
+        <span class="conversation-item__nom">${salon.nom}</span>
+        <span class="conversation-item__heure">En direct</span>
       </div>
       <div class="conversation-item__ligne">
-        <p class="conversation-item__apercu">Nouvelle conversation</p>
+        <p class="conversation-item__apercu">Salon public Supabase</p>
       </div>
     </div>
   `;
   return li;
 }
 
-// Ouvre la conversation avec un contact donné (crée l'entrée si nécessaire).
-export function ouvrirConversationAvecContact(nom, initiales = '', classeAvatar = '') {
-  const items = document.querySelectorAll('.conversation-item');
-  let itemTrouve = null;
+// Initialise les salons réels depuis la base de données Supabase.
+async function initialiserSalonsSupabase() {
+  try {
+    const { data: salons, error } = await recupererTousLesSalons();
+    if (!error && Array.isArray(salons) && salons.length > 0) {
+      // Insérer les salons Supabase en tête de liste
+      const premierSalon = salons[0];
 
-  items.forEach((item) => {
-    const elNom = item.querySelector('.conversation-item__nom');
-    if (elNom && elNom.textContent.trim().toLowerCase() === nom.toLowerCase()) {
-      itemTrouve = item;
-    }
-  });
+      salons.reverse().forEach((salon, index) => {
+        const estPremier = (salon.id === premierSalon.id);
+        const el = creerElementSalon(salon, estPremier);
+        listeConversations.prepend(el);
+      });
 
-  if (!itemTrouve) {
-    itemTrouve = creerElementConversation(nom, initiales, classeAvatar);
-    if (!historiqueConversations[nom]) {
-      historiqueConversations[nom] = [];
+      // Retirer l'état actif des anciens éléments statiques
+      const items = listeConversations.querySelectorAll('.conversation-item');
+      items.forEach((it) => {
+        if (!it.dataset.salonId) {
+          it.classList.remove('conversation-item--active');
+        }
+      });
+
+      // Charger le premier salon Supabase
+      chargerSalonSupabase(premierSalon.id, premierSalon.nom);
+      mettreAJourCompteur();
     }
-    listeConversations.prepend(itemTrouve);
-    mettreAJourCompteur();
+  } catch (err) {
+    console.warn('Impossible de charger les salons Supabase :', err);
   }
-
-  activerConversation(itemTrouve);
 }
 
 // ---- Écouteurs d'événements ----
 
-// 1. Clic sur une conversation dans la liste
 if (listeConversations) {
   listeConversations.addEventListener('click', (evenement) => {
     const item = evenement.target.closest('.conversation-item');
@@ -145,7 +226,6 @@ if (listeConversations) {
   });
 }
 
-// 2. Recherche en direct dans les conversations
 if (champRecherche) {
   champRecherche.addEventListener('input', () => {
     const requete = champRecherche.value.trim().toLowerCase();
@@ -165,34 +245,31 @@ if (champRecherche) {
   });
 }
 
-// 3. Clic sur un contact dans le panneau latéral des contacts
 itemsContacts.forEach((itemContact) => {
   itemContact.addEventListener('click', () => {
     const elNom = itemContact.querySelector('.panneau-contacts__nom');
-    const elAvatar = itemContact.querySelector('.avatar');
     if (!elNom) return;
 
     const nom = elNom.textContent.trim();
-    const initiales = elAvatar ? elAvatar.textContent.trim() : '';
-    const classeAvatar = elAvatar ? elAvatar.className.replace('avatar', '').trim() : '';
+    const items = document.querySelectorAll('.conversation-item');
+    let itemTrouve = null;
 
-    ouvrirConversationAvecContact(nom, initiales, classeAvatar);
+    items.forEach((item) => {
+      const nomItem = item.querySelector('.conversation-item__nom');
+      if (nomItem && nomItem.textContent.trim().toLowerCase() === nom.toLowerCase()) {
+        itemTrouve = item;
+      }
+    });
+
+    if (itemTrouve) {
+      activerConversation(itemTrouve);
+    }
     fermerContacts();
   });
 });
 
-// 4. Synchronisation avec l'envoi de messages
 document.addEventListener('message-ajoute', (evenement) => {
-  const { texte, heure, estEnvoye } = evenement.detail;
-  const nomActif = recupererNomConversationActive();
-
-  // Enregistrer dans l'historique
-  if (!historiqueConversations[nomActif]) {
-    historiqueConversations[nomActif] = [];
-  }
-  historiqueConversations[nomActif].push({ texte, heure, estEnvoye });
-
-  // Mettre à jour l'aperçu dans l'élément actif
+  const { texte, estEnvoye } = evenement.detail;
   const itemActif = document.querySelector('.conversation-item--active');
   if (itemActif) {
     const apercu = itemActif.querySelector('.conversation-item__apercu');
@@ -203,10 +280,9 @@ document.addEventListener('message-ajoute', (evenement) => {
     if (elementHeure) {
       elementHeure.textContent = 'À l'instant';
     }
-    // Remonter la conversation active en haut de la liste
     listeConversations.prepend(itemActif);
   }
 });
 
-// Initialiser le compteur au chargement
+initialiserSalonsSupabase();
 mettreAJourCompteur();
