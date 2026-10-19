@@ -10,8 +10,10 @@ const lienDeconnexion = document.getElementById('lien-deconnexion');
 async function verifierUtilisateurConnecte() {
   const { data, error } = await recupererSession();
   if (error || !data.session) {
-    window.location.href = 'connexion.html';
+    window.location.replace('connexion.html');
+    return;
   }
+  document.body.classList.add('session-verifiee');
 }
 
 // Déconnecte l'utilisateur puis le renvoie vers la page de connexion.
