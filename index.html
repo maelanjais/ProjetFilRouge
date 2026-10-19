@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="css/index.css">
   <script type="module" src="js/interface/parametres.js" defer></script>
   <script type="module" src="js/interface/contacts.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/interface/index.js"></script>
 </head>
 <body class="page-messagerie">
 
@@ -183,7 +185,7 @@
         <div class="message message--envoye">
           <div class="message__bulle">
             <p class="message__texte">Oui, jeudi après-midi ça me va.</p>
-            <span class="message__horodatage">14:05 — ENVOYÉ</span>
+            <span class="message__horodatage">14:05</span>
           </div>
         </div>
 
@@ -280,7 +282,8 @@
         <button type="submit" class="bouton-principal">
           Enregistrer
         </button>
-        <a href="connexion.html" class="bouton-deconnexion">Se déconnecter</a>
+        <a href="connexion.html" class="bouton-deconnexion" id="lien-deconnexion">Se déconnecter</a>
+        <p class="panneau-parametres__erreur" id="message-erreur" role="alert"></p>
       </div>
     </form>
   </aside>
