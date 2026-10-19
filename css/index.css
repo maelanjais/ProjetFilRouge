@@ -710,6 +710,18 @@
   color: var(--couleur-danger-foncee);
 }
 
+/* Message d'erreur de déconnexion ; masqué tant qu'il est vide pour ne pas
+   ajouter un espacement (gap) inutile sous le lien. */
+.panneau-parametres__erreur {
+  text-align: center;
+  color: var(--couleur-danger);
+  font-size: var(--taille-s);
+}
+
+.panneau-parametres__erreur:empty {
+  display: none;
+}
+
 /* ---- Liste du panneau des contacts ---- */
 .panneau-contacts__liste {
   list-style: none;
@@ -718,7 +730,6 @@
   gap: var(--espace-xxs);
 }
 
-/* Même présentation qu'une conversation de la barre latérale, pour la cohérence */
 .panneau-contacts__item {
   display: flex;
   align-items: center;

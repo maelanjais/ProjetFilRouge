@@ -115,6 +115,12 @@
   color: var(--couleur-texte-discret);
 }
 
+/* Message d'erreur */
+.formulaire-auth__erreur {
+  color: var(--couleur-danger);
+  font-size: var(--taille-l);
+  font-weight: bold;
+}
 /* ---- Liens et mentions sous le formulaire ---- */
 .auth__lien-bascule {
   font-size: var(--taille-m);

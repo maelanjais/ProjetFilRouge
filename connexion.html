@@ -10,6 +10,8 @@
   <title>Connexion - Messagerie</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/authentification.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="js/interface/connexion.js"></script>
 </head>
 <body>
   <main class="auth">
@@ -25,7 +27,7 @@
     <section class="auth__contenu">
       <h2 class="auth__titre">Connexion</h2>
 
-      <form class="formulaire-auth" action="index.html" method="get">
+      <form class="formulaire-auth">
         <div class="champ">
           <label class="champ__label" for="courriel">Courriel</label>
           <input class="champ__saisie" type="email" id="courriel" name="courriel"
@@ -39,6 +41,7 @@
                  minlength="8" required>
         </div>
 
+        <p class="formulaire-auth__erreur" id="message-erreur" role="alert"></p>
         <button class="bouton-principal" type="submit">Se connecter</button>
       </form>
 

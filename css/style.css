@@ -22,12 +22,12 @@
   --couleur-voile: rgba(0, 0, 0, 0.45);
   --ombre-panneau: -6px 0 25px rgba(0, 0, 0, 0.18);
 
-  /* Couleurs d'action destructrice (déconnexion) */
+  /* Couleurs d'action destructrice */
   --couleur-danger: #c0392b;
   --couleur-danger-foncee: #a93226;
   --couleur-danger-fond: #fceae8;
 
-  /* Couleurs spécifiques à la messagerie (index.html) */
+  /* Couleurs spécifiques à la messagerie */
   --couleur-fond-clair: #e9ede5;
   --couleur-bulle-recue: #e9ede5;
   --couleur-bulle-envoyee: var(--couleur-primaire);
