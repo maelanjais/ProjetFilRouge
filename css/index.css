@@ -9,6 +9,17 @@
   background-color: var(--couleur-surface);
 }
 
+/* Page masquée tant que index.js n'a pas confirmé la session, pour éviter
+   qu'un visiteur non connecté l'aperçoive avant la redirection. */
+.page-messagerie {
+  visibility: hidden;
+}
+
+.page-messagerie.session-verifiee {
+  visibility: visible;
+}
+
+
 /* ---- Avatars (initiales dans un cercle) ---- */
 .avatar {
   width: var(--taille-avatar);

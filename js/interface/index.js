@@ -43,15 +43,17 @@ async function verifierUtilisateurConnecte() {
   // Permet de tester ou prévisualiser l'interface avec ?demo dans l'URL
   const params = new URLSearchParams(window.location.search);
   if (params.has('demo')) {
+    document.body.classList.add('session-verifiee');
     return;
   }
 
   const { data, error } = await recupererSession();
   if (error || !data?.session) {
-    window.location.href = 'connexion.html';
+    window.location.replace('connexion.html');
     return;
   }
 
+  document.body.classList.add('session-verifiee');
   afficherProfilUtilisateur(data.session.user);
 }
 
