@@ -16,16 +16,10 @@ import {
 import { recupererTousLesSalons } from '../donnees/salons.js';
 import { recupererSession } from '../donnees/authentification.js';
 
-// ---- Éléments du DOM ----
-const listeConversations = document.querySelector('.conversations__liste');
-const champRecherche = document.getElementById('champ-recherche');
-const compteurConversations = document.querySelector('.conversations__compteur');
-const itemsContacts = document.querySelectorAll('.panneau-contacts__item');
-
 let canalTempsReelActif = null;
 
-// Historique statique de secours si hors ligne
-const historiqueStatique = {
+// Historique de messages pour les contacts réguliers
+const historiqueContacts = {
   'Mbappé': [
     { texte: 'Salut, tu as regardé le planning de la semaine ?', estEnvoye: false, heure: '14:02' },
     { texte: 'Oui, jeudi après-midi ça me va.', estEnvoye: true, heure: '14:05' },
@@ -39,11 +33,11 @@ const historiqueStatique = {
   ],
   'Bot6': [
     { texte: 'Initialisation des services en cours...', estEnvoye: false, heure: 'Hier' },
-    { texte: 'Sauvegarde terminée', estEnvoye: false, heure: 'Hier' },
+    { texte: 'Sauvegarde terminée avec succès.', estEnvoye: false, heure: 'Hier' },
   ],
   'Babouche': [
     { texte: 'Regarde les photos de la rando !', estEnvoye: false, heure: 'Lun.' },
-    { texte: 'Photo', estEnvoye: false, heure: 'Lun.' },
+    { texte: 'Photo reçue', estEnvoye: false, heure: 'Lun.' },
   ],
   'Thomas': [
     { texte: 'Est-ce que tu peux valider les maquettes ?', estEnvoye: false, heure: '3 j' },
@@ -60,10 +54,12 @@ export function recupererNomConversationActive() {
 }
 
 // Met à jour le compteur de conversations visibles.
-function mettreAJourCompteur() {
-  if (!compteurConversations || !listeConversations) return;
-  const visibles = listeConversations.querySelectorAll('.conversation-item:not(.masque)');
-  compteurConversations.textContent = visibles.length;
+export function mettreAJourCompteur() {
+  const compteur = document.querySelector('.conversations__compteur');
+  const liste = document.querySelector('.conversations__liste');
+  if (!compteur || !liste) return;
+  const visibles = liste.querySelectorAll('.conversation-item:not(.masque)');
+  compteur.textContent = visibles.length;
 }
 
 // Charge un salon Supabase avec ses vrais messages et active le temps réel.
@@ -93,19 +89,23 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
   mettreAJourEnteteDiscussion(nomSalon, initiales, 'avatar--primaire');
 
   // Chargement des messages depuis Supabase
-  const { data: messages, error } = await recupererMessagesParSalon(salonId);
-  if (!error && Array.isArray(messages)) {
-    const messagesFormates = messages.map((m) => {
-      const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
-        || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
-      return {
-        texte: m.contenu || '',
-        estEnvoye,
-        auteurPseudo: m.auteur_pseudo || 'Membre',
-        heure: formaterHeureCourante(m.date_creation),
-      };
-    });
-    chargerHistoriqueMessages(messagesFormates);
+  try {
+    const { data: messages, error } = await recupererMessagesParSalon(salonId);
+    if (!error && Array.isArray(messages)) {
+      const messagesFormates = messages.map((m) => {
+        const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
+          || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
+        return {
+          texte: m.contenu || '',
+          estEnvoye,
+          auteurPseudo: m.auteur_pseudo || 'Membre',
+          heure: formaterHeureCourante(m.date_creation),
+        };
+      });
+      chargerHistoriqueMessages(messagesFormates);
+    }
+  } catch (err) {
+    console.warn('Erreur chargement messages salon :', err);
   }
 
   // Écoute des nouveaux messages en temps réel
@@ -150,14 +150,19 @@ export function activerConversation(elementItem) {
   if (salonId) {
     chargerSalonSupabase(Number(salonId), nom);
   } else {
-    // Si c'est un contact statique
+    // Si c'est un contact régulier
     window.salonIdActuel = null;
+    if (canalTempsReelActif) {
+      arreterEcouteTempsReel(canalTempsReelActif);
+      canalTempsReelActif = null;
+    }
+
     const elementAvatar = elementItem.querySelector('.avatar');
     const initiales = elementAvatar ? elementAvatar.textContent.trim() : nom.slice(0, 2).toUpperCase();
     const classesAvatar = elementAvatar ? elementAvatar.className.replace('avatar', '').trim() : '';
 
     mettreAJourEnteteDiscussion(nom, initiales, classesAvatar);
-    const messages = historiqueStatique[nom] || [];
+    const messages = historiqueContacts[nom] || [];
     chargerHistoriqueMessages(messages);
   }
 }
@@ -186,19 +191,22 @@ function creerElementSalon(salon, estActif = false) {
 
 // Initialise les salons réels depuis la base de données Supabase.
 async function initialiserSalonsSupabase() {
+  const listeConversations = document.querySelector('.conversations__liste');
+  if (!listeConversations) return;
+
   try {
     const { data: salons, error } = await recupererTousLesSalons();
     if (!error && Array.isArray(salons) && salons.length > 0) {
-      // Insérer les salons Supabase en tête de liste
       const premierSalon = salons[0];
 
-      salons.reverse().forEach((salon, index) => {
+      // Insérer les salons en début de liste
+      [...salons].reverse().forEach((salon) => {
         const estPremier = (salon.id === premierSalon.id);
         const el = creerElementSalon(salon, estPremier);
         listeConversations.prepend(el);
       });
 
-      // Retirer l'état actif des anciens éléments statiques
+      // Retirer l'état actif des anciens éléments
       const items = listeConversations.querySelectorAll('.conversation-item');
       items.forEach((it) => {
         if (!it.dataset.salonId) {
@@ -206,7 +214,7 @@ async function initialiserSalonsSupabase() {
         }
       });
 
-      // Charger le premier salon Supabase
+      // Charger les messages du premier salon
       chargerSalonSupabase(premierSalon.id, premierSalon.nom);
       mettreAJourCompteur();
     }
@@ -215,74 +223,89 @@ async function initialiserSalonsSupabase() {
   }
 }
 
-// ---- Écouteurs d'événements ----
+// ---- Branchement immédiat des écouteurs d'événements ----
 
-if (listeConversations) {
-  listeConversations.addEventListener('click', (evenement) => {
-    const item = evenement.target.closest('.conversation-item');
-    if (item) {
-      activerConversation(item);
-    }
-  });
-}
+function attacherEcouteurs() {
+  const liste = document.querySelector('.conversations__liste');
+  const champRecherche = document.getElementById('champ-recherche');
+  const itemsContacts = document.querySelectorAll('.panneau-contacts__item');
 
-if (champRecherche) {
-  champRecherche.addEventListener('input', () => {
-    const requete = champRecherche.value.trim().toLowerCase();
-    const items = listeConversations.querySelectorAll('.conversation-item');
-
-    items.forEach((item) => {
-      const elNom = item.querySelector('.conversation-item__nom');
-      const nom = elNom ? elNom.textContent.toLowerCase() : '';
-      if (nom.includes(requete)) {
-        item.classList.remove('masque');
-      } else {
-        item.classList.add('masque');
+  // 1. Clic sur une conversation (délégation d'événement sur la liste)
+  if (liste) {
+    liste.addEventListener('click', (evenement) => {
+      const item = evenement.target.closest('.conversation-item');
+      if (item) {
+        activerConversation(item);
       }
     });
-
-    mettreAJourCompteur();
-  });
-}
-
-itemsContacts.forEach((itemContact) => {
-  itemContact.addEventListener('click', () => {
-    const elNom = itemContact.querySelector('.panneau-contacts__nom');
-    if (!elNom) return;
-
-    const nom = elNom.textContent.trim();
-    const items = document.querySelectorAll('.conversation-item');
-    let itemTrouve = null;
-
-    items.forEach((item) => {
-      const nomItem = item.querySelector('.conversation-item__nom');
-      if (nomItem && nomItem.textContent.trim().toLowerCase() === nom.toLowerCase()) {
-        itemTrouve = item;
-      }
-    });
-
-    if (itemTrouve) {
-      activerConversation(itemTrouve);
-    }
-    fermerContacts();
-  });
-});
-
-document.addEventListener('message-ajoute', (evenement) => {
-  const { texte, estEnvoye } = evenement.detail;
-  const itemActif = document.querySelector('.conversation-item--active');
-  if (itemActif) {
-    const apercu = itemActif.querySelector('.conversation-item__apercu');
-    const elementHeure = itemActif.querySelector('.conversation-item__heure');
-    if (apercu) {
-      apercu.textContent = estEnvoye ? `Vous : ${texte}` : texte;
-    }
-    if (elementHeure) {
-      elementHeure.textContent = 'À l'instant';
-    }
-    listeConversations.prepend(itemActif);
   }
-});
 
+  // 2. Recherche en direct
+  if (champRecherche) {
+    champRecherche.addEventListener('input', () => {
+      const requete = champRecherche.value.trim().toLowerCase();
+      const items = document.querySelectorAll('.conversations__liste .conversation-item');
+
+      items.forEach((item) => {
+        const elNom = item.querySelector('.conversation-item__nom');
+        const nom = elNom ? elNom.textContent.toLowerCase() : '';
+        if (nom.includes(requete)) {
+          item.classList.remove('masque');
+        } else {
+          item.classList.add('masque');
+        }
+      });
+
+      mettreAJourCompteur();
+    });
+  }
+
+  // 3. Clic sur les contacts du panneau latéral
+  itemsContacts.forEach((itemContact) => {
+    itemContact.addEventListener('click', () => {
+      const elNom = itemContact.querySelector('.panneau-contacts__nom');
+      if (!elNom) return;
+
+      const nom = elNom.textContent.trim();
+      const items = document.querySelectorAll('.conversations__liste .conversation-item');
+      let itemTrouve = null;
+
+      items.forEach((item) => {
+        const nomItem = item.querySelector('.conversation-item__nom');
+        if (nomItem && nomItem.textContent.trim().toLowerCase() === nom.toLowerCase()) {
+          itemTrouve = item;
+        }
+      });
+
+      if (itemTrouve) {
+        activerConversation(itemTrouve);
+      }
+      fermerContacts();
+    });
+  });
+
+  // 4. Mise à jour de l'aperçu du dernier message
+  document.addEventListener('message-ajoute', (evenement) => {
+    const { texte, estEnvoye } = evenement.detail;
+    const itemActif = document.querySelector('.conversation-item--active');
+    const listeActuelle = document.querySelector('.conversations__liste');
+    if (itemActif) {
+      const apercu = itemActif.querySelector('.conversation-item__apercu');
+      const elementHeure = itemActif.querySelector('.conversation-item__heure');
+      if (apercu) {
+        apercu.textContent = estEnvoye ? `Vous : ${texte}` : texte;
+      }
+      if (elementHeure) {
+        elementHeure.textContent = "À l'instant";
+      }
+      if (listeActuelle) {
+        listeActuelle.prepend(itemActif);
+      }
+    }
+  });
+}
+
+// Initialisation au chargement du module
+attacherEcouteurs();
 initialiserSalonsSupabase();
 mettreAJourCompteur();
