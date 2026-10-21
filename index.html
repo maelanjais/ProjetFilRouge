@@ -2,11 +2,11 @@
 <!-- index.html — page principale de la messagerie : barre supérieure,
      liste des conversations à gauche et zone de discussion à droite. -->
 <html lang="fr">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description"
-        content="Messagerie instantanée Web : échangez des messages en temps réel.">
+  <meta name="description" content="Messagerie instantanée Web : échangez des messages en temps réel.">
   <title>Accueil - Messagerie</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/index.css">
@@ -17,6 +17,7 @@
   <script type="module" src="js/interface/conversations.js" defer></script>
   <script type="module" src="js/interface/index.js" defer></script>
 </head>
+
 <body class="page-messagerie">
 
   <!-- En-tête du site -->
@@ -24,13 +25,14 @@
     <a href="index.html" class="logo">MESSAGERIE</a>
 
     <!-- Profil cliquable : un seul bouton qui ouvre le panneau des paramètres -->
-    <button type="button" class="entete-profil" id="bouton-ouvrir-parametres"
-            title="Ouvrir les paramètres">
+    <button type="button" class="entete-profil" id="bouton-ouvrir-parametres" title="Ouvrir les paramètres">
       <span class="entete-profil__icone">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
         </svg>
       </span>
 
@@ -54,21 +56,18 @@
         <!-- Recherche et accès à la gestion des contacts, sur une même ligne -->
         <div class="barre-laterale__recherche-et-contacts">
           <div class="recherche">
-            <svg class="recherche__icone" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round">
+            <svg class="recherche__icone" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
             <input type="search" id="champ-recherche" class="recherche__champ"
-                   placeholder="Rechercher une conversation">
+              placeholder="Rechercher une conversation">
           </div>
 
-          <button type="button" class="bouton-contacts" id="bouton-ouvrir-contacts"
-                  aria-label="Gérer les contacts">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 aria-hidden="true" focusable="false">
+          <button type="button" class="bouton-contacts" id="bouton-ouvrir-contacts" aria-label="Gérer les contacts">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -211,16 +210,15 @@
         <form class="formulaire-message" id="formulaire-message">
           <button type="button" class="bouton-joindre">+</button>
           <button type="button" class="bouton-micro">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
               <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
               <line x1="12" y1="19" x2="12" y2="23"></line>
               <line x1="8" y1="23" x2="16" y2="23"></line>
             </svg>
           </button>
-          <input type="text" id="saisie-message" class="saisie-message"
-                 placeholder="Écrire un message" required>
+          <input type="text" id="saisie-message" class="saisie-message" placeholder="Écrire un message" required>
           <button type="submit" class="bouton-envoyer">
             <span>ENVOYER</span>
             <span class="bouton-envoyer__fleche">&rarr;</span>
@@ -240,7 +238,7 @@
     <div class="panneau-parametres__entete">
       <h2 class="panneau-parametres__titre">Paramètres</h2>
       <button type="button" class="bouton-fermer" id="bouton-fermer-parametres"
-              aria-label="Fermer les paramètres">&times;</button>
+        aria-label="Fermer les paramètres">&times;</button>
     </div>
 
     <form class="panneau-parametres__contenu" id="formulaire-parametres">
@@ -257,22 +255,13 @@
 
         <div class="champ-parametre">
           <label class="champ-parametre__label" for="param-pseudo">Nom d'affichage</label>
-          <input type="text" id="param-pseudo" class="champ-parametre__saisie"
-                 value="Thomas L.">
+          <input type="text" id="param-pseudo" class="champ-parametre__saisie" value="Thomas L.">
         </div>
       </section>
 
       <!-- Section Préférences -->
       <section class="section-parametre">
         <h3 class="section-parametre__titre">Préférences</h3>
-        <label class="option-bascule">
-          <input type="checkbox" class="option-bascule__case" checked>
-          <span>Activer les notifications sonores</span>
-        </label>
-        <label class="option-bascule">
-          <input type="checkbox" class="option-bascule__case" checked>
-          <span>Afficher les aperçus de messages</span>
-        </label>
         <label class="option-bascule">
           <input type="checkbox" class="option-bascule__case" id="case-mode-sombre">
           <span>Mode sombre</span>
@@ -298,7 +287,7 @@
     <div class="panneau-contacts__entete">
       <h2 class="panneau-contacts__titre">Contacts</h2>
       <button type="button" class="bouton-fermer" id="bouton-fermer-contacts"
-              aria-label="Fermer les contacts">&times;</button>
+        aria-label="Fermer les contacts">&times;</button>
     </div>
 
     <div class="panneau-contacts__contenu">
@@ -320,8 +309,14 @@
           <span class="panneau-contacts__nom">Babouche</span>
         </li>
       </ul>
+      <div class="panneau-contacts__actions">
+        <button type="submit" class="bouton-principal">
+          Ajouter un contact
+        </button>
+      </div>
     </div>
   </aside>
 
 </body>
+
 </html>

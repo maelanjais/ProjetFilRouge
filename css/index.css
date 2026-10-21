@@ -692,7 +692,8 @@
   cursor: pointer;
 }
 
-.panneau-parametres__actions {
+.panneau-parametres__actions,
+.panneau-contacts__actions {
   display: flex;
   flex-direction: column;
   gap: var(--espace-m);
@@ -700,7 +701,8 @@
   padding-top: var(--espace-m);
 }
 
-.panneau-parametres__actions .bouton-principal {
+.panneau-parametres__actions .bouton-principal,
+.panneau-contacts__actions .bouton-principal {
   text-align: center;
   border-radius: var(--rayon-s);
 }
