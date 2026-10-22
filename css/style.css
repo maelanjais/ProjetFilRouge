@@ -14,6 +14,7 @@
   --couleur-texte-discret: #626262;
   --couleur-bordure: #d4d4cc;
   --couleur-bordure-accentuee: #b8c1b2;
+  --flou-voile: 6px;
 
   /* Couleurs de survol et de superposition */
   --couleur-survol: #f7f9f6;

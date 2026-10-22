@@ -16,6 +16,7 @@
   <script type="module" src="js/interface/discussion.js" defer></script>
   <script type="module" src="js/interface/conversations.js" defer></script>
   <script type="module" src="js/interface/index.js" defer></script>
+  <script type="module" src="js/interface/recherche-contact.js"></script>
 </head>
 
 <body class="page-messagerie">
@@ -310,12 +311,22 @@
         </li>
       </ul>
       <div class="panneau-contacts__actions">
-        <button type="submit" class="bouton-principal">
+        <button type="button" class="bouton-principal" id="bouton-ajouter-contact">
           Ajouter un contact
         </button>
       </div>
     </div>
   </aside>
+
+  <!-- Fenêtre de recherche d'un utilisateur à ajouter aux contacts -->
+  <dialog class="recherche-contact" id="fenetre-recherche-contact">
+    <label class="recherche-contact__label" for="champ-recherche-contact">
+      Ajouter un contact
+    </label>
+    <input class="recherche-contact__champ" type="search" id="champ-recherche-contact"
+      placeholder="Rechercher un pseudo" autocomplete="off" maxlength="30">
+    <ul class="recherche-contact__resultats" id="resultats-recherche-contact" aria-live="polite"></ul>
+  </dialog>
 
 </body>
 

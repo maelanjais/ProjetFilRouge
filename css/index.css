@@ -803,9 +803,53 @@
     transform: scale(1);
     opacity: 1;
   }
+
   to {
     transform: scale(1.2);
     opacity: 0.6;
   }
 }
 
+/* ---- Fenêtre de recherche de contact ----
+   <dialog> ouvert avec showModal() : centré et au-dessus de toute la page. */
+.recherche-contact {
+  width: 90%;
+  max-width: 32rem;
+  padding: var(--espace-l);
+  border: none;
+  border-radius: var(--rayon-l);
+  background-color: var(--couleur-surface);
+  box-shadow: var(--ombre-panneau);
+}
+
+/* Voile flouté derrière la fenêtre */
+.recherche-contact::backdrop {
+  background-color: var(--couleur-voile);
+  backdrop-filter: blur(var(--flou-voile));
+}
+
+.recherche-contact__label {
+  display: block;
+  margin-bottom: var(--espace-s);
+  font-size: var(--taille-l);
+  font-weight: 700;
+}
+
+/* Taille de texte de 1rem minimum : en dessous, iOS zoome sur le champ au focus */
+.recherche-contact__champ {
+  width: 100%;
+  padding: var(--espace-s) var(--espace-m);
+  font-size: var(--taille-m);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-pilule);
+}
+
+.recherche-contact__champ:focus-visible {
+  outline: 2px solid var(--couleur-primaire);
+  outline-offset: 2px;
+}
+
+.recherche-contact__resultats {
+  list-style: none;
+  margin-top: var(--espace-s);
+}
