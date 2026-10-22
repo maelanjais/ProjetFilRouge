@@ -849,7 +849,32 @@
   outline-offset: 2px;
 }
 
+/* Liste des résultats : hauteur limitée pour que la fenêtre reste dans l'écran
+   sur mobile ; au-delà, la liste défile. */
 .recherche-contact__resultats {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espace-xxs);
   margin-top: var(--espace-s);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+/* Une ligne par profil trouvé, sur le même modèle que les contacts du panneau */
+.recherche-contact__resultat {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-s);
+  min-height: var(--hauteur-cible-tactile);
+  padding: var(--espace-xs) var(--espace-m);
+  border-radius: var(--rayon-m);
+  font-size: var(--taille-s);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  transition: background-color var(--duree-transition);
+}
+
+.recherche-contact__resultat:hover {
+  background-color: var(--couleur-survol);
 }
