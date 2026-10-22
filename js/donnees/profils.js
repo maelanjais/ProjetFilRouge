@@ -1,4 +1,4 @@
-// profils.js - appels Supabase pour la table profils (recherche par pseudo).
+// profils.js - appels Supabase pour la table profils (recherche par pseudo, récupération pseudo).
 // Ne touche jamais au DOM : renvoie les données ou l'erreur.
 import { client } from './config-supabase.js';
 

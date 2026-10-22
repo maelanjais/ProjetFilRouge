@@ -878,3 +878,44 @@
 .recherche-contact__resultat:hover {
   background-color: var(--couleur-survol);
 }
+
+/* Pseudo : prend toute la place disponible pour pousser le bouton à droite */
+.recherche-contact__nom {
+  flex: 1;
+  min-width: 0;
+  color: var(--couleur-texte);
+}
+
+/* Bouton « Ajouter » : contour discret, rempli au survol pour signaler l'action */
+.recherche-contact__bouton-ajouter {
+  flex-shrink: 0;
+  min-height: var(--hauteur-cible-tactile);
+  padding: 0 var(--espace-m);
+  border: var(--epaisseur-trait) solid var(--couleur-primaire);
+  border-radius: var(--rayon-pilule);
+  background-color: transparent;
+  color: var(--couleur-primaire);
+  font-size: var(--taille-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--duree-transition), color var(--duree-transition);
+}
+
+.recherche-contact__bouton-ajouter:hover {
+  background-color: var(--couleur-primaire);
+  color: var(--couleur-texte-inverse);
+}
+
+.recherche-contact__bouton-ajouter:focus-visible {
+  outline: 2px solid var(--couleur-primaire);
+  outline-offset: 2px;
+}
+
+/* Bouton désactivé (envoi en cours, « Ajouté », « Déjà ajouté ») : plus d'effet
+   de survol, pour montrer qu'il n'y a plus rien à faire. */
+.recherche-contact__bouton-ajouter:disabled {
+  border-color: var(--couleur-bordure);
+  background-color: transparent;
+  color: var(--couleur-texte-discret);
+  cursor: default;
+}
