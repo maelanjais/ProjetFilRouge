@@ -676,10 +676,12 @@
   gap: var(--espace-s);
   min-height: var(--hauteur-cible-tactile);
   padding: var(--espace-xs) var(--espace-s);
-  border-radius: var(--rayon-l);
+  border-radius: var(--rayon-s);
   cursor: pointer;
   transition: background-color var(--duree-transition);
-  font-size: var(--taille-xl);
+  font-size: var(--taille-l);
+  background-color: var(--couleur-fond);
+  font-weight: 600;
 }
 
 .panneau-contacts__item:hover {
