@@ -85,8 +85,7 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     console.warn(e);
   }
 
-  const initiales = nomSalon.slice(0, 2).toUpperCase();
-  mettreAJourEnteteDiscussion(nomSalon, initiales, 'avatar--primaire');
+  mettreAJourEnteteDiscussion(nomSalon);
 
   // Chargement des messages depuis Supabase
   try {
@@ -157,11 +156,7 @@ export function activerConversation(elementItem) {
       canalTempsReelActif = null;
     }
 
-    const elementAvatar = elementItem.querySelector('.avatar');
-    const initiales = elementAvatar ? elementAvatar.textContent.trim() : nom.slice(0, 2).toUpperCase();
-    const classesAvatar = elementAvatar ? elementAvatar.className.replace('avatar', '').trim() : '';
-
-    mettreAJourEnteteDiscussion(nom, initiales, classesAvatar);
+    mettreAJourEnteteDiscussion(nom);
     const messages = historiqueContacts[nom] || [];
     chargerHistoriqueMessages(messages);
   }
@@ -173,9 +168,7 @@ function creerElementSalon(salon, estActif = false) {
   li.className = `conversation-item ${estActif ? 'conversation-item--active' : ''}`;
   li.dataset.salonId = salon.id;
 
-  const initiales = salon.nom.slice(0, 2).toUpperCase();
   li.innerHTML = `
-    <span class="avatar avatar--primaire">${initiales}</span>
     <div class="conversation-item__contenu">
       <div class="conversation-item__ligne">
         <span class="conversation-item__nom">${salon.nom}</span>

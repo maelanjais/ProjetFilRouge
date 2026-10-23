@@ -65,12 +65,6 @@ function enregistrerParametres(evenement) {
 
       const apercuNom = document.querySelector('.profil-apercu__nom');
       if (apercuNom) apercuNom.textContent = nouveauPseudo;
-
-      // Mettre à jour les initiales
-      const initiales = nouveauPseudo.slice(0, 2).toUpperCase();
-      document.querySelectorAll('.entete-profil .avatar, .profil-apercu .avatar').forEach((av) => {
-        av.textContent = initiales;
-      });
     }
   }
 

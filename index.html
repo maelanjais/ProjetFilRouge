@@ -39,10 +39,8 @@
 
       <span class="entete-profil__infos">
         <span class="entete-profil__nom">Thomas L.</span>
-        <span class="entete-profil__statut">CONNECTÉ</span>
       </span>
 
-      <span class="avatar avatar--petit avatar--primaire">TL</span>
     </button>
   </header>
 
@@ -86,7 +84,6 @@
 
           <ul class="conversations__liste">
             <li class="conversation-item conversation-item--active">
-              <span class="avatar avatar--sombre">KM</span>
               <div class="conversation-item__contenu">
                 <div class="conversation-item__ligne">
                   <span class="conversation-item__nom">Mbappé</span>
@@ -94,59 +91,6 @@
                 </div>
                 <div class="conversation-item__ligne">
                   <p class="conversation-item__apercu">On se cale ça pour jeudi ?</p>
-                  <span class="badge-non-lu">2</span>
-                </div>
-              </div>
-            </li>
-
-            <li class="conversation-item">
-              <span class="avatar">CO</span>
-              <div class="conversation-item__contenu">
-                <div class="conversation-item__ligne">
-                  <span class="conversation-item__nom">Couscous</span>
-                  <span class="conversation-item__heure">1 h</span>
-                </div>
-                <div class="conversation-item__ligne">
-                  <p class="conversation-item__apercu">Vous : j'arrive dans 10</p>
-                </div>
-              </div>
-            </li>
-
-            <li class="conversation-item">
-              <span class="avatar">B6</span>
-              <div class="conversation-item__contenu">
-                <div class="conversation-item__ligne">
-                  <span class="conversation-item__nom">Bot6</span>
-                  <span class="conversation-item__heure">Hier</span>
-                </div>
-                <div class="conversation-item__ligne">
-                  <p class="conversation-item__apercu">Sauvegarde terminée</p>
-                </div>
-              </div>
-            </li>
-
-            <li class="conversation-item">
-              <span class="avatar">BA</span>
-              <div class="conversation-item__contenu">
-                <div class="conversation-item__ligne">
-                  <span class="conversation-item__nom">Babouche</span>
-                  <span class="conversation-item__heure">Lun.</span>
-                </div>
-                <div class="conversation-item__ligne">
-                  <p class="conversation-item__apercu">Photo</p>
-                </div>
-              </div>
-            </li>
-
-            <li class="conversation-item">
-              <span class="avatar">TH</span>
-              <div class="conversation-item__contenu">
-                <div class="conversation-item__ligne">
-                  <span class="conversation-item__nom">Thomas</span>
-                  <span class="conversation-item__heure">3 j</span>
-                </div>
-                <div class="conversation-item__ligne">
-                  <p class="conversation-item__apercu">Vous : noté, merci</p>
                 </div>
               </div>
             </li>
@@ -167,15 +111,11 @@
 
       <!-- En-tête du contact -->
       <header class="discussion__entete">
-        <span class="avatar avatar--sombre">KM</span>
         <h2 class="discussion__nom">Mbappé</h2>
       </header>
 
       <!-- Historique des messages -->
       <div class="discussion__messages">
-        <div class="separateur-date">
-          <span class="separateur-date__texte">AUJOURD'HUI</span>
-        </div>
 
         <div class="message message--recu">
           <div class="message__bulle">
@@ -247,7 +187,6 @@
       <section class="section-parametre">
         <h3 class="section-parametre__titre">Profil utilisateur</h3>
         <div class="profil-apercu">
-          <span class="avatar avatar--grand avatar--primaire">TL</span>
           <div>
             <p class="profil-apercu__nom">Thomas L.</p>
             <p class="profil-apercu__courriel">thomas@exemple.com</p>
@@ -292,23 +231,7 @@
     </div>
 
     <div class="panneau-contacts__contenu">
-      <ul class="panneau-contacts__liste">
-        <li class="panneau-contacts__item">
-          <span class="avatar">TH</span>
-          <span class="panneau-contacts__nom">Thomas</span>
-        </li>
-        <li class="panneau-contacts__item">
-          <span class="avatar">CO</span>
-          <span class="panneau-contacts__nom">Couscous</span>
-        </li>
-        <li class="panneau-contacts__item">
-          <span class="avatar">B6</span>
-          <span class="panneau-contacts__nom">Bot6</span>
-        </li>
-        <li class="panneau-contacts__item">
-          <span class="avatar">BA</span>
-          <span class="panneau-contacts__nom">Babouche</span>
-        </li>
+      <ul class="panneau-contacts__liste" id="liste-panneau-contact">
       </ul>
       <div class="panneau-contacts__actions">
         <button type="button" class="bouton-principal" id="bouton-ajouter-contact">

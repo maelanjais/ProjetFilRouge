@@ -14,16 +14,10 @@ function afficherProfilUtilisateur(utilisateur) {
   const pseudo = utilisateur.user_metadata?.nom_utilisateur
     || utilisateur.email?.split('@')[0]
     || 'Utilisateur';
-  const initiales = pseudo.slice(0, 2).toUpperCase();
 
   // En-tête de l'application
   const enteteNom = document.querySelector('.entete-profil__nom');
   if (enteteNom) enteteNom.textContent = pseudo;
-
-  const avatarsProfil = document.querySelectorAll('.entete-profil .avatar, .profil-apercu .avatar');
-  avatarsProfil.forEach((avatar) => {
-    avatar.textContent = initiales;
-  });
 
   // Panneau des paramètres
   const apercuNom = document.querySelector('.profil-apercu__nom');

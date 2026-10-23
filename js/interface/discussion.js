@@ -12,7 +12,6 @@ const saisieMessage = document.getElementById('saisie-message');
 const boutonMicro = document.querySelector('.bouton-micro');
 const boutonJoindre = document.querySelector('.bouton-joindre');
 const enteteNom = document.querySelector('.discussion__nom');
-const enteteAvatar = document.querySelector('.discussion__entete .avatar');
 
 // Identifiant du salon actif (1 par défaut)
 window.salonIdActuel = 1;
@@ -131,13 +130,9 @@ export function chargerHistoriqueMessages(listeMessages) {
   defilerEnBas();
 }
 
-// Met à jour l'en-tête de la discussion avec le nom et les initiales du contact.
-export function mettreAJourEnteteDiscussion(nom, initiales, classeAvatar = '') {
+// Met à jour l'en-tête de la discussion avec le nom du contact ou du salon.
+export function mettreAJourEnteteDiscussion(nom) {
   if (enteteNom) enteteNom.textContent = nom;
-  if (enteteAvatar) {
-    enteteAvatar.textContent = initiales;
-    enteteAvatar.className = `avatar ${classeAvatar}`.trim();
-  }
 }
 
 // ---- Gestion des événements ----

@@ -18,3 +18,13 @@ export async function recupererIdsContacts(idUtilisateurConnecte) {
     .select('contact_id')
     .eq('proprietaire_id', idUtilisateurConnecte);
 }
+
+// Récupère les contacts de l'utilisateur connecté avec leur pseudo.
+// Renvoie { data: [{ contact: { id, nom_utilisateur } }, ...], error }.
+export async function recupererContacts(idUtilisateurConnecte) {
+  return client
+    .from('contacts')
+    .select('contact:profils!contact_id(id, nom_utilisateur)')
+    .eq('proprietaire_id', idUtilisateurConnecte);
+}
+

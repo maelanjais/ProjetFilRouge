@@ -19,43 +19,6 @@
   visibility: visible;
 }
 
-
-/* ---- Avatars (initiales dans un cercle) ---- */
-.avatar {
-  width: var(--taille-avatar);
-  height: var(--taille-avatar);
-  border-radius: var(--rayon-cercle);
-  background-color: var(--couleur-fond-clair);
-  color: var(--couleur-texte);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: var(--taille-s);
-  flex-shrink: 0;
-}
-
-.avatar--sombre {
-  background-color: var(--couleur-sombre);
-  color: var(--couleur-texte-inverse);
-}
-
-.avatar--primaire {
-  background-color: var(--couleur-primaire);
-  color: var(--couleur-texte-inverse);
-}
-
-.avatar--petit {
-  width: var(--taille-avatar-petit);
-  height: var(--taille-avatar-petit);
-}
-
-.avatar--grand {
-  width: var(--taille-avatar-grand);
-  height: var(--taille-avatar-grand);
-  font-size: var(--taille-l);
-}
-
 /* ---- En-tête supérieur ---- */
 .entete-app {
   height: var(--hauteur-entete);
@@ -110,13 +73,6 @@
 .entete-profil__nom {
   font-size: var(--taille-s);
   font-weight: 700;
-}
-
-.entete-profil__statut {
-  font-size: var(--taille-micro);
-  font-weight: 700;
-  letter-spacing: var(--espacement-lettres);
-  color: var(--couleur-statut);
 }
 
 /* ---- Corps principal ---- */
@@ -303,20 +259,6 @@
   color: var(--couleur-texte-inverse-discret);
 }
 
-.badge-non-lu {
-  background-color: var(--couleur-texte-inverse);
-  color: var(--couleur-primaire);
-  width: var(--taille-badge);
-  height: var(--taille-badge);
-  border-radius: var(--rayon-cercle);
-  font-size: var(--taille-xxxs);
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 /* Bouton Nouvelle conversation */
 .bouton-nouvelle-conversation {
   background-color: var(--couleur-sombre);
@@ -380,26 +322,11 @@
   gap: var(--espace-l);
 }
 
-/* Séparateur de date : texte centré entre deux traits */
-.separateur-date {
-  display: flex;
-  align-items: center;
-  margin: var(--espace-xs) 0 var(--espace-m) 0;
-}
-
 .separateur-date::before,
 .separateur-date::after {
   content: "";
   flex: 1;
   border-bottom: var(--epaisseur-trait) solid var(--couleur-bordure);
-}
-
-.separateur-date__texte {
-  padding: 0 var(--espace-m);
-  font-size: var(--taille-xxxs);
-  font-weight: 800;
-  letter-spacing: var(--espacement-lettres);
-  color: var(--couleur-texte-discret);
 }
 
 /* Messages : reçus à gauche, envoyés à droite */
@@ -752,6 +679,7 @@
   border-radius: var(--rayon-l);
   cursor: pointer;
   transition: background-color var(--duree-transition);
+  font-size: var(--taille-xl);
 }
 
 .panneau-contacts__item:hover {
