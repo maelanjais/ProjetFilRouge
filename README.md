@@ -45,11 +45,16 @@ js/
     contacts.js        # Panneau latéral de la liste des contacts
     discussion.js      # Zone de discussion, envoi des messages et vocal
     conversations.js   # Liste des conversations, sélection et recherche
+    recherche-contact.js # Dialogue de recherche et ajout de contact
     index.js           # Contrôle d'accès et synchronisation du profil
     utils.js           # Messages d'erreur et utilitaires
   donnees/             # Appels Supabase uniquement, sans DOM
     config-supabase.js # Client Supabase et configuration
     authentification.js# Fonctions d'authentification Supabase Auth
+    contacts.js        # Requêtes Supabase pour la liste de contacts
+    messages.js        # Requêtes Supabase et temps réel des messages
+    profils.js         # Recherche de profils utilisateurs
+    salons.js          # Récupération et création des salons
 maquettes/             # Maquettes des écrans (connexion, inscription, accueil)
 ```
 
