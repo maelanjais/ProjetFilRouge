@@ -13,44 +13,17 @@ import {
   ecouterNouveauxMessages,
   arreterEcouteTempsReel,
 } from '../donnees/messages.js';
-import { recupererTousLesSalons } from '../donnees/salons.js';
+import { recupererTousLesSalons, creerSalonSupabase } from '../donnees/salons.js';
 import { recupererSession } from '../donnees/authentification.js';
 
 let canalTempsReelActif = null;
 
-// Historique de messages pour les contacts réguliers
-const historiqueContacts = {
-  'Mbappé': [
-    { texte: 'Salut, tu as regardé le planning de la semaine ?', estEnvoye: false, heure: '14:02' },
-    { texte: 'Oui, jeudi après-midi ça me va.', estEnvoye: true, heure: '14:05' },
-    { texte: 'Parfait. Je bloque 14 h – 16 h et j'invite Thomas.', estEnvoye: false, heure: '14:06' },
-    { texte: 'On se cale ça pour jeudi ?', estEnvoye: false, heure: '14:12' },
-  ],
-  'Couscous': [
-    { texte: 'Salut ! Tu viens manger ce midi ?', estEnvoye: false, heure: '12:30' },
-    { texte: 'Tu es où ?', estEnvoye: false, heure: '13:45' },
-    { texte: 'j'arrive dans 10', estEnvoye: true, heure: '13:50' },
-  ],
-  'Bot6': [
-    { texte: 'Initialisation des services en cours...', estEnvoye: false, heure: 'Hier' },
-    { texte: 'Sauvegarde terminée avec succès.', estEnvoye: false, heure: 'Hier' },
-  ],
-  'Babouche': [
-    { texte: 'Regarde les photos de la rando !', estEnvoye: false, heure: 'Lun.' },
-    { texte: 'Photo reçue', estEnvoye: false, heure: 'Lun.' },
-  ],
-  'Thomas': [
-    { texte: 'Est-ce que tu peux valider les maquettes ?', estEnvoye: false, heure: '3 j' },
-    { texte: 'noté, merci', estEnvoye: true, heure: '3 j' },
-  ],
-};
-
 // Renvoie le nom de la conversation active.
 export function recupererNomConversationActive() {
   const itemActif = document.querySelector('.conversation-item--active');
-  if (!itemActif) return 'Salon 1';
+  if (!itemActif) return 'Général';
   const elementNom = itemActif.querySelector('.conversation-item__nom');
-  return elementNom ? elementNom.textContent.trim() : 'Salon 1';
+  return elementNom ? elementNom.textContent.trim() : 'Général';
 }
 
 // Met à jour le compteur de conversations visibles.
@@ -142,24 +115,11 @@ export function activerConversation(elementItem) {
     badgeNonLu.remove();
   }
 
-  const salonId = elementItem.dataset.salonId;
+  const salonId = elementItem.dataset.salonId || 1;
   const elementNom = elementItem.querySelector('.conversation-item__nom');
-  const nom = elementNom ? elementNom.textContent.trim() : '';
+  const nom = elementNom ? elementNom.textContent.trim() : 'Général';
 
-  if (salonId) {
-    chargerSalonSupabase(Number(salonId), nom);
-  } else {
-    // Si c'est un contact régulier
-    window.salonIdActuel = null;
-    if (canalTempsReelActif) {
-      arreterEcouteTempsReel(canalTempsReelActif);
-      canalTempsReelActif = null;
-    }
-
-    mettreAJourEnteteDiscussion(nom);
-    const messages = historiqueContacts[nom] || [];
-    chargerHistoriqueMessages(messages);
-  }
+  chargerSalonSupabase(Number(salonId), nom);
 }
 
 // Crée un élément de salon Supabase pour la liste.
@@ -175,7 +135,7 @@ function creerElementSalon(salon, estActif = false) {
         <span class="conversation-item__heure">En direct</span>
       </div>
       <div class="conversation-item__ligne">
-        <p class="conversation-item__apercu">Salon public Supabase</p>
+        <p class="conversation-item__apercu">Salon Supabase</p>
       </div>
     </div>
   `;
@@ -190,24 +150,18 @@ async function initialiserSalonsSupabase() {
   try {
     const { data: salons, error } = await recupererTousLesSalons();
     if (!error && Array.isArray(salons) && salons.length > 0) {
+      // Remplacer les placeholders statiques par les vrais salons Supabase
+      listeConversations.replaceChildren();
+
       const premierSalon = salons[0];
 
-      // Insérer les salons en début de liste
-      [...salons].reverse().forEach((salon) => {
+      salons.forEach((salon) => {
         const estPremier = (salon.id === premierSalon.id);
         const el = creerElementSalon(salon, estPremier);
-        listeConversations.prepend(el);
+        listeConversations.appendChild(el);
       });
 
-      // Retirer l'état actif des anciens éléments
-      const items = listeConversations.querySelectorAll('.conversation-item');
-      items.forEach((it) => {
-        if (!it.dataset.salonId) {
-          it.classList.remove('conversation-item--active');
-        }
-      });
-
-      // Charger les messages du premier salon
+      // Charger les messages du premier salon Supabase
       chargerSalonSupabase(premierSalon.id, premierSalon.nom);
       mettreAJourCompteur();
     }
@@ -216,14 +170,54 @@ async function initialiserSalonsSupabase() {
   }
 }
 
+// Ouvre ou crée un salon pour un contact donné
+export async function ouvrirConversationAvecContact(nomContact) {
+  const listeConversations = document.querySelector('.conversations__liste');
+  if (!listeConversations) return;
+
+  // Vérifier si un salon existe déjà pour ce contact
+  const items = document.querySelectorAll('.conversations__liste .conversation-item');
+  for (const item of items) {
+    const elNom = item.querySelector('.conversation-item__nom');
+    if (elNom && elNom.textContent.trim().toLowerCase() === nomContact.toLowerCase()) {
+      activerConversation(item);
+      return;
+    }
+  }
+
+  // Sinon, créer un salon Supabase pour ce contact
+  try {
+    const { data } = await recupererSession();
+    const userId = data?.session?.user?.id || null;
+    const { data: nouveauSalon, error } = await creerSalonSupabase(nomContact, userId);
+
+    if (!error && nouveauSalon && nouveauSalon[0]) {
+      const salon = nouveauSalon[0];
+      const el = creerElementSalon(salon, true);
+      listeConversations.prepend(el);
+      activerConversation(el);
+      mettreAJourCompteur();
+      return;
+    }
+  } catch (e) {
+    console.warn(e);
+  }
+
+  // Fallback si erreur : créer l'élément visuel
+  const el = creerElementSalon({ id: 1, nom: nomContact }, true);
+  listeConversations.prepend(el);
+  activerConversation(el);
+  mettreAJourCompteur();
+}
+
 // ---- Branchement immédiat des écouteurs d'événements ----
 
 function attacherEcouteurs() {
   const liste = document.querySelector('.conversations__liste');
   const champRecherche = document.getElementById('champ-recherche');
-  const itemsContacts = document.querySelectorAll('.panneau-contacts__item');
+  const panneauContactsListe = document.getElementById('liste-panneau-contact');
 
-  // 1. Clic sur une conversation (délégation d'événement sur la liste)
+  // 1. Clic sur une conversation dans la liste
   if (liste) {
     liste.addEventListener('click', (evenement) => {
       const item = evenement.target.closest('.conversation-item');
@@ -233,7 +227,7 @@ function attacherEcouteurs() {
     });
   }
 
-  // 2. Recherche en direct
+  // 2. Recherche en direct dans les conversations
   if (champRecherche) {
     champRecherche.addEventListener('input', () => {
       const requete = champRecherche.value.trim().toLowerCase();
@@ -253,29 +247,19 @@ function attacherEcouteurs() {
     });
   }
 
-  // 3. Clic sur les contacts du panneau latéral
-  itemsContacts.forEach((itemContact) => {
-    itemContact.addEventListener('click', () => {
-      const elNom = itemContact.querySelector('.panneau-contacts__nom');
-      if (!elNom) return;
+  // 3. Clic sur un contact dans le panneau latéral (délégation d'événements dynamique)
+  if (panneauContactsListe) {
+    panneauContactsListe.addEventListener('click', (evenement) => {
+      const item = evenement.target.closest('.panneau-contacts__item');
+      if (!item) return;
 
-      const nom = elNom.textContent.trim();
-      const items = document.querySelectorAll('.conversations__liste .conversation-item');
-      let itemTrouve = null;
+      const nom = item.textContent.trim();
+      if (!nom || nom.includes('Aucun contact') || nom.includes('Impossible')) return;
 
-      items.forEach((item) => {
-        const nomItem = item.querySelector('.conversation-item__nom');
-        if (nomItem && nomItem.textContent.trim().toLowerCase() === nom.toLowerCase()) {
-          itemTrouve = item;
-        }
-      });
-
-      if (itemTrouve) {
-        activerConversation(itemTrouve);
-      }
+      ouvrirConversationAvecContact(nom);
       fermerContacts();
     });
-  });
+  }
 
   // 4. Mise à jour de l'aperçu du dernier message
   document.addEventListener('message-ajoute', (evenement) => {
