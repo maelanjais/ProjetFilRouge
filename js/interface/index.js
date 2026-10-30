@@ -3,15 +3,19 @@
 
 import { deconnecterUtilisateur, recupererSession } from '../donnees/authentification.js';
 import { afficherErreur } from './utils.js';
+import { recupererPseudo } from '../donnees/profils.js';
 
 // ---- Éléments du DOM ----
 const lienDeconnexion = document.getElementById('lien-deconnexion');
 
 // Met à jour l'affichage du profil utilisateur dans l'en-tête et les paramètres.
-function afficherProfilUtilisateur(utilisateur) {
+// Le pseudo est lu dans la table profils, seule source à jour après un changement
+// de pseudo ; à défaut, on affiche le début du courriel.
+async function afficherProfilUtilisateur(utilisateur) {
   if (!utilisateur) return;
 
-  const pseudo = utilisateur.user_metadata?.nom_utilisateur
+  const { data: profil, error } = await recupererPseudo(utilisateur.id);
+  const pseudo = (!error && profil?.nom_utilisateur)
     || utilisateur.email?.split('@')[0]
     || 'Utilisateur';
 

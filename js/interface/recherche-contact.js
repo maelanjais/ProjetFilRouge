@@ -4,7 +4,7 @@
 import { rechercherProfils } from '../donnees/profils.js';
 import { recupererSession } from '../donnees/authentification.js';
 import { ajouterContact, recupererIdsContacts } from '../donnees/contacts.js';
-
+import { initialiserListeContacts } from './contacts.js';
 
 // ---- Éléments du DOM ----
 const boutonAjouterContact = document.getElementById('bouton-ajouter-contact');
@@ -33,6 +33,8 @@ async function ouvrirRechercheContact() {
 function fermerRechercheSurVoile(evenement) {
   if (evenement.target === fenetreRecherche) {
     fenetreRecherche.close();
+    champRecherche.value = null;
+    listeResultats.children = null;
   }
 }
 
@@ -104,6 +106,7 @@ async function ajouterProfilAuxContacts(idContact, bouton) {
   }
   idsContacts.add(idContact);
   bouton.textContent = 'Ajouté';
+  initialiserListeContacts();
 }
 
 // Lance la recherche à chaque frappe et affiche les résultats ou l'erreur.
@@ -123,7 +126,15 @@ async function afficherResultatsRecherche() {
   afficherProfilsTrouves(profils);
 }
 
+// Vide le champ et les résultats à chaque fermeture (voile, Échap...), pour que
+// la fenêtre se rouvre vierge.
+function reinitialiserRecherche() {
+  champRecherche.value = '';
+  listeResultats.replaceChildren();
+}
+
 // ---- Branchement des événements ----
 boutonAjouterContact.addEventListener('click', ouvrirRechercheContact);
 fenetreRecherche.addEventListener('click', fermerRechercheSurVoile);
+fenetreRecherche.addEventListener('close', reinitialiserRecherche);
 champRecherche.addEventListener('input', afficherResultatsRecherche);

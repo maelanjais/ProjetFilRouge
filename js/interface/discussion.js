@@ -3,7 +3,7 @@
 // défilement automatique et synchronisation avec Supabase.
 
 import { envoyerMessageSupabase } from '../donnees/messages.js';
-import { recupererSession } from '../donnees/authentification.js';
+import { recupererUtilisateurConnecte } from '../donnees/profils.js';
 
 // ---- Éléments du DOM ----
 const conteneurMessages = document.querySelector('.discussion__messages');
@@ -146,20 +146,10 @@ if (formulaireMessage) {
 
     saisieMessage.value = '';
 
-    // Récupérer la session pour obtenir le pseudo et ID de l'utilisateur
-    let pseudo = 'Moi';
-    let userId = null;
-    try {
-      const { data } = await recupererSession();
-      if (data?.session?.user) {
-        userId = data.session.user.id;
-        pseudo = data.session.user.user_metadata?.nom_utilisateur
-          || data.session.user.email?.split('@')[0]
-          || 'Moi';
-      }
-    } catch (e) {
-      console.warn('Session non disponible :', e);
-    }
+    // Pseudo à jour et id de l'utilisateur, pour l'affichage et l'enregistrement
+    const utilisateur = await recupererUtilisateurConnecte();
+    const pseudo = utilisateur?.pseudo ?? 'Moi';
+    const userId = utilisateur?.id ?? null;
 
     // Affichage local immédiat
     ajouterMessage({ texte, estEnvoye: true, auteurPseudo: pseudo });
@@ -216,15 +206,12 @@ if (boutonMicro) {
         // Synchronisation avec Supabase
         if (window.salonIdActuel) {
           try {
-            const { data } = await recupererSession();
-            const pseudo = data?.session?.user?.user_metadata?.nom_utilisateur
-              || data?.session?.user?.email?.split('@')[0]
-              || 'Moi';
+            const utilisateur = await recupererUtilisateurConnecte();
             await envoyerMessageSupabase({
               salonId: window.salonIdActuel,
               contenu: '[Message vocal 🎙️]',
-              auteurPseudo: pseudo,
-              auteurId: data?.session?.user?.id || null,
+              auteurPseudo: utilisateur?.pseudo ?? 'Moi',
+              auteurId: utilisateur?.id ?? null,
             });
           } catch (e) {
             console.warn(e);

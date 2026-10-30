@@ -46,7 +46,7 @@ function afficherLigneContact(texte) {
 }
 
 // Récupère les contacts de l'utilisateur connecté et les affiche par ordre alphabétique.
-async function initialiserListeContacts() {
+export async function initialiserListeContacts() {
   const { data } = await recupererSession();
   idUtilisateurConnecte = data.session?.user.id ?? null;
 

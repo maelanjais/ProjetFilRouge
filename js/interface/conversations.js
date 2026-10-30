@@ -15,6 +15,7 @@ import {
 } from '../donnees/messages.js';
 import { recupererTousLesSalons, creerSalonSupabase } from '../donnees/salons.js';
 import { recupererSession } from '../donnees/authentification.js';
+import { recupererUtilisateurConnecte } from '../donnees/profils.js';
 
 let canalTempsReelActif = null;
 
@@ -44,19 +45,9 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     canalTempsReelActif = null;
   }
 
-  let pseudoActuel = '';
-  let userIdActuel = null;
-  try {
-    const { data } = await recupererSession();
-    if (data?.session?.user) {
-      userIdActuel = data.session.user.id;
-      pseudoActuel = data.session.user.user_metadata?.nom_utilisateur
-        || data.session.user.email?.split('@')[0]
-        || '';
-    }
-  } catch (e) {
-    console.warn(e);
-  }
+  const utilisateur = await recupererUtilisateurConnecte();
+  const pseudoActuel = utilisateur?.pseudo ?? '';
+  const userIdActuel = utilisateur?.id ?? null;
 
   mettreAJourEnteteDiscussion(nomSalon);
 

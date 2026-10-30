@@ -1,6 +1,16 @@
 // parametres.js — ouverture, fermeture et enregistrement du panneau latéral
 // des paramètres de la page de messagerie.
 
+import { changerPseudoProfil } from '../donnees/profils.js';
+import { recupererSession } from '../donnees/authentification.js';
+import { afficherErreur } from './utils.js';
+
+// Messages pour les refus de la base lors d'un changement de pseudo.
+const MESSAGES_ERREUR_PSEUDO = {
+  23505: 'Ce pseudo est déjà pris.',
+  23514: 'Le pseudo doit contenir entre 3 et 30 caractères.',
+};
+
 // ---- Éléments du DOM ----
 const boutonOuvrirParametres = document.getElementById('bouton-ouvrir-parametres');
 const boutonFermerParametres = document.getElementById('bouton-fermer-parametres');
@@ -52,24 +62,27 @@ function initialiserTheme() {
   }
 }
 
-// Enregistre les paramètres sans recharger la page.
-function enregistrerParametres(evenement) {
+// Enregistre le nouveau pseudo dans la base puis l'affiche dans la page.
+async function enregistrerParametres(evenement) {
   evenement.preventDefault();
-
-  if (champPseudo) {
-    const nouveauPseudo = champPseudo.value.trim();
-    if (nouveauPseudo) {
-      // Mettre à jour l'en-tête du profil
-      const enteteNom = document.querySelector('.entete-profil__nom');
-      if (enteteNom) enteteNom.textContent = nouveauPseudo;
-
-      const apercuNom = document.querySelector('.profil-apercu__nom');
-      if (apercuNom) apercuNom.textContent = nouveauPseudo;
-    }
+  const nouveauPseudo = champPseudo.value.trim();
+  if (!nouveauPseudo) {
+    afficherErreur('Le pseudo ne peut pas être vide.');
+    return;
   }
 
+  const { data } = await recupererSession();
+  const { error } = await changerPseudoProfil(data.session?.user.id, nouveauPseudo);
+  if (error) {
+    afficherErreur(MESSAGES_ERREUR_PSEUDO[error.code] ?? 'Enregistrement impossible, réessayez.');
+    return;
+  }
+
+  document.querySelector('.entete-profil__nom').textContent = nouveauPseudo;
+  document.querySelector('.profil-apercu__nom').textContent = nouveauPseudo;
   fermerParametres();
 }
+
 
 // ---- Branchement des événements ----
 boutonOuvrirParametres.addEventListener('click', ouvrirParametres);
