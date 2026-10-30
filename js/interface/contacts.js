@@ -38,10 +38,14 @@ function fermerContactsAvecEchap(evenement) {
 }
 
 // Ajoute une ligne de texte (pseudo ou message) à la liste des contacts.
-function afficherLigneContact(texte) {
+// idContact est gardé dans data-contact-id pour ouvrir la conversation au clic.
+function afficherLigneContact(texte, idContact = null) {
   const ligne = document.createElement('li');
   ligne.className = 'panneau-contacts__item';
   ligne.textContent = texte;
+  if (idContact) {
+    ligne.dataset.contactId = idContact;
+  }
   listeContacts.append(ligne);
 }
 
@@ -63,10 +67,10 @@ export async function initialiserListeContacts() {
     return;
   }
 
-  const pseudos = contacts.map((ligne) => ligne.contact.nom_utilisateur);
-  pseudos.sort((a, b) => a.localeCompare(b));
-  for (const pseudo of pseudos) {
-    afficherLigneContact(pseudo);
+  const profils = contacts.map((ligne) => ligne.contact);
+  profils.sort((a, b) => a.nom_utilisateur.localeCompare(b.nom_utilisateur));
+  for (const profil of profils) {
+    afficherLigneContact(profil.nom_utilisateur, profil.id);
   }
 }
 

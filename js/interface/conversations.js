@@ -13,8 +13,11 @@ import {
   ecouterNouveauxMessages,
   arreterEcouteTempsReel,
 } from '../donnees/messages.js';
-import { recupererTousLesSalons, creerSalonSupabase } from '../donnees/salons.js';
-import { recupererSession } from '../donnees/authentification.js';
+import {
+  recupererSalonsUtilisateur,
+  trouverSalonEntre,
+  creerSalon,
+} from '../donnees/salons.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
 
 let canalTempsReelActif = null;
@@ -113,92 +116,104 @@ export function activerConversation(elementItem) {
   chargerSalonSupabase(Number(salonId), nom);
 }
 
-// Crée un élément de salon Supabase pour la liste.
-function creerElementSalon(salon, estActif = false) {
+// Renvoie le pseudo de l'autre participant du salon : chacun voit le nom de son
+// interlocuteur, quel que soit celui qui a créé la conversation.
+function recupererNomInterlocuteur(salon, idUtilisateur) {
+  const profilInterlocuteur = salon.cree_par === idUtilisateur
+    ? salon.participant
+    : salon.createur;
+  return profilInterlocuteur?.nom_utilisateur ?? 'Utilisateur supprimé';
+}
+
+// Crée l'élément de liste d'un salon. Le nom passe par textContent (jamais
+// innerHTML) car c'est un pseudo choisi par un utilisateur.
+function creerElementSalon(salon, nom) {
   const li = document.createElement('li');
-  li.className = `conversation-item ${estActif ? 'conversation-item--active' : ''}`;
+  li.className = 'conversation-item';
   li.dataset.salonId = salon.id;
 
-  li.innerHTML = `
-    <div class="conversation-item__contenu">
-      <div class="conversation-item__ligne">
-        <span class="conversation-item__nom">${salon.nom}</span>
-        <span class="conversation-item__heure">En direct</span>
-      </div>
-      <div class="conversation-item__ligne">
-        <p class="conversation-item__apercu">Salon Supabase</p>
-      </div>
-    </div>
-  `;
+  const contenu = document.createElement('div');
+  contenu.className = 'conversation-item__contenu';
+
+  const ligneNom = document.createElement('div');
+  ligneNom.className = 'conversation-item__ligne';
+  const elementNom = document.createElement('span');
+  elementNom.className = 'conversation-item__nom';
+  elementNom.textContent = nom;
+  const elementHeure = document.createElement('span');
+  elementHeure.className = 'conversation-item__heure';
+  ligneNom.append(elementNom, elementHeure);
+
+  const ligneApercu = document.createElement('div');
+  ligneApercu.className = 'conversation-item__ligne';
+  const apercu = document.createElement('p');
+  apercu.className = 'conversation-item__apercu';
+  ligneApercu.append(apercu);
+
+  contenu.append(ligneNom, ligneApercu);
+  li.append(contenu);
   return li;
 }
 
-// Initialise les salons réels depuis la base de données Supabase.
+// Affiche les salons de l'utilisateur connecté et ouvre le premier.
 async function initialiserSalonsSupabase() {
   const listeConversations = document.querySelector('.conversations__liste');
   if (!listeConversations) return;
 
-  try {
-    const { data: salons, error } = await recupererTousLesSalons();
-    if (!error && Array.isArray(salons) && salons.length > 0) {
-      // Remplacer les placeholders statiques par les vrais salons Supabase
-      listeConversations.replaceChildren();
+  const utilisateur = await recupererUtilisateurConnecte();
+  if (!utilisateur) return;
 
-      const premierSalon = salons[0];
+  const { data: salons, error } = await recupererSalonsUtilisateur(utilisateur.id);
+  listeConversations.replaceChildren();
+  if (error) {
+    mettreAJourEnteteDiscussion('Impossible de charger les conversations');
+    return;
+  }
 
-      salons.forEach((salon) => {
-        const estPremier = (salon.id === premierSalon.id);
-        const el = creerElementSalon(salon, estPremier);
-        listeConversations.appendChild(el);
-      });
+  for (const salon of salons) {
+    const nom = recupererNomInterlocuteur(salon, utilisateur.id);
+    listeConversations.append(creerElementSalon(salon, nom));
+  }
+  mettreAJourCompteur();
 
-      // Charger les messages du premier salon Supabase
-      chargerSalonSupabase(premierSalon.id, premierSalon.nom);
-      mettreAJourCompteur();
-    }
-  } catch (err) {
-    console.warn('Impossible de charger les salons Supabase :', err);
+  const premierElement = listeConversations.querySelector('.conversation-item');
+  if (premierElement) {
+    activerConversation(premierElement);
   }
 }
 
-// Ouvre ou crée un salon pour un contact donné
-export async function ouvrirConversationAvecContact(nomContact) {
+// Ouvre la conversation avec un contact : réutilise le salon existant entre les
+// deux utilisateurs s'il y en a un, sinon le crée.
+export async function ouvrirConversationAvecContact(idContact, nomContact) {
   const listeConversations = document.querySelector('.conversations__liste');
-  if (!listeConversations) return;
+  const utilisateur = await recupererUtilisateurConnecte();
+  if (!listeConversations || !utilisateur) return;
 
-  // Vérifier si un salon existe déjà pour ce contact
-  const items = document.querySelectorAll('.conversations__liste .conversation-item');
-  for (const item of items) {
-    const elNom = item.querySelector('.conversation-item__nom');
-    if (elNom && elNom.textContent.trim().toLowerCase() === nomContact.toLowerCase()) {
-      activerConversation(item);
-      return;
-    }
+  const { data: salonExistant, error: erreurRecherche } =
+    await trouverSalonEntre(utilisateur.id, idContact);
+  if (erreurRecherche) {
+    mettreAJourEnteteDiscussion('Impossible d\'ouvrir la conversation');
+    return;
   }
 
-  // Sinon, créer un salon Supabase pour ce contact
-  try {
-    const { data } = await recupererSession();
-    const userId = data?.session?.user?.id || null;
-    const { data: nouveauSalon, error } = await creerSalonSupabase(nomContact, userId);
-
-    if (!error && nouveauSalon && nouveauSalon[0]) {
-      const salon = nouveauSalon[0];
-      const el = creerElementSalon(salon, true);
-      listeConversations.prepend(el);
-      activerConversation(el);
-      mettreAJourCompteur();
+  let salon = salonExistant;
+  if (!salon) {
+    const { data: nouveauSalon, error: erreurCreation } =
+      await creerSalon(utilisateur.id, idContact);
+    if (erreurCreation) {
+      mettreAJourEnteteDiscussion('Impossible d\'ouvrir la conversation');
       return;
     }
-  } catch (e) {
-    console.warn(e);
+    salon = nouveauSalon;
   }
 
-  // Fallback si erreur : créer l'élément visuel
-  const el = creerElementSalon({ id: 1, nom: nomContact }, true);
-  listeConversations.prepend(el);
-  activerConversation(el);
-  mettreAJourCompteur();
+  let element = listeConversations.querySelector(`[data-salon-id="${salon.id}"]`);
+  if (!element) {
+    element = creerElementSalon(salon, nomContact);
+    listeConversations.prepend(element);
+    mettreAJourCompteur();
+  }
+  activerConversation(element);
 }
 
 // ---- Branchement immédiat des écouteurs d'événements ----
@@ -241,13 +256,12 @@ function attacherEcouteurs() {
   // 3. Clic sur un contact dans le panneau latéral (délégation d'événements dynamique)
   if (panneauContactsListe) {
     panneauContactsListe.addEventListener('click', (evenement) => {
+      // Seules les lignes de contact ont un data-contact-id (pas les messages
+      // « Aucun contact… » ou « Impossible… »).
       const item = evenement.target.closest('.panneau-contacts__item');
-      if (!item) return;
+      if (!item?.dataset.contactId) return;
 
-      const nom = item.textContent.trim();
-      if (!nom || nom.includes('Aucun contact') || nom.includes('Impossible')) return;
-
-      ouvrirConversationAvecContact(nom);
+      ouvrirConversationAvecContact(item.dataset.contactId, item.textContent.trim());
       fermerContacts();
     });
   }

@@ -87,14 +87,19 @@ ajouté `contact_id` » (relation à sens unique).
 Clé primaire composée `(proprietaire_id, contact_id)` : un même contact ne peut
 pas être ajouté deux fois. Une contrainte `check` empêche de s'ajouter soi-même.
 
-**`salons`** : salons de conversation.
+**`salons`** : conversations entre deux utilisateurs. Chacun ne voit que les
+salons où il est `cree_par` ou `participant_id`, et le nom affiché est le pseudo
+de son interlocuteur.
 
 | Colonne | Type | Contraintes |
 | --- | --- | --- |
 | `id` | `int8` | Clé primaire |
 | `date_creation` | `timestamptz` | Par défaut : `now()` |
-| `nom` | `varchar` | Nom affiché du salon |
-| `cree_par` | `uuid` | Clé étrangère vers `profils(id)`, mise à `null` si le compte est supprimé |
+| `nom` | `varchar` | Facultatif, non utilisé (le nom affiché vient de `profils`) |
+| `cree_par` | `uuid` | Utilisateur qui a ouvert la conversation, clé étrangère vers `profils(id)` |
+| `participant_id` | `uuid` | Interlocuteur, clé étrangère vers `profils(id)` (suppression en cascade) |
+
+Une contrainte `check` empêche d'ouvrir une conversation avec soi-même.
 
 **`messages`** : messages envoyés dans les salons.
 
