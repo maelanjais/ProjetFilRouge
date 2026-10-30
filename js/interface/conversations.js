@@ -12,6 +12,7 @@ import {
   recupererMessagesParSalon,
   ecouterNouveauxMessages,
   arreterEcouteTempsReel,
+  recupererDerniersMessages,
 } from '../donnees/messages.js';
 import {
   recupererSalonsUtilisateur,
@@ -155,6 +156,22 @@ function creerElementSalon(salon, nom) {
   return li;
 }
 
+// Remplit l'aperçu et l'heure de chaque conversation avec le dernier message
+// (vue derniers_messages).
+function afficherApercus(derniersMessages, idUtilisateur) {
+  for (const message of derniersMessages) {
+    const element = document.querySelector(`[data-salon-id="${message.salon_id}"]`);
+    if (!element) continue;
+
+    const apercu = element.querySelector('.conversation-item__apercu');
+    const elementHeure = element.querySelector('.conversation-item__heure');
+    apercu.textContent = message.auteur_id === idUtilisateur
+      ? `Vous : ${message.contenu}`
+      : message.contenu;
+    elementHeure.textContent = formaterHeureCourante(message.date_creation);
+  }
+}
+
 // Affiche les salons de l'utilisateur connecté et ouvre le premier.
 async function initialiserSalonsSupabase() {
   const listeConversations = document.querySelector('.conversations__liste');
@@ -174,6 +191,14 @@ async function initialiserSalonsSupabase() {
     const nom = recupererNomInterlocuteur(salon, utilisateur.id);
     listeConversations.append(creerElementSalon(salon, nom));
   }
+
+  const idsSalons = salons.map((salon) => salon.id);
+  const { data: derniersMessages, error: erreurApercus } =
+    await recupererDerniersMessages(idsSalons);
+  if (!erreurApercus) {
+    afficherApercus(derniersMessages, utilisateur.id);
+  }
+
   mettreAJourCompteur();
 
   const premierElement = listeConversations.querySelector('.conversation-item');

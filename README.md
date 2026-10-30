@@ -112,6 +112,15 @@ Une contrainte `check` empêche d'ouvrir une conversation avec soi-même.
 | `auteur_pseudo` | `varchar` | Pseudo de l'auteur au moment de l'envoi |
 | `contenu` | `text` | Texte du message |
 
+### Vue
+
+**`derniers_messages`** : dernier message de chaque salon, utilisé pour l'aperçu
+affiché dans la liste des conversations. Elle reprend les colonnes `salon_id`,
+`contenu`, `auteur_id`, `auteur_pseudo` et `date_creation` de `messages`, avec
+une seule ligne par salon : `distinct on (salon_id)` trié par `date_creation`
+décroissante garde le message le plus récent. Elle est créée avec
+`security_invoker = true` pour appliquer les droits de l'utilisateur qui la lit.
+
 ### Création automatique du profil
 
 À chaque inscription, le déclencheur `declencheur_creer_profil` (exécuté

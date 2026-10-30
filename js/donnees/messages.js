@@ -59,3 +59,13 @@ export function arreterEcouteTempsReel(canal) {
     client.removeChannel(canal);
   }
 }
+
+// Récupère le dernier message de chacun des salons donnés (vue derniers_messages).
+// Renvoie { data: [{ salon_id, contenu, auteur_id, auteur_pseudo, date_creation }, ...], error }.
+export async function recupererDerniersMessages(idsSalons) {
+  return client
+    .from('derniers_messages')
+    .select('salon_id, contenu, auteur_id, auteur_pseudo, date_creation')
+    .in('salon_id', idsSalons);
+}
+
