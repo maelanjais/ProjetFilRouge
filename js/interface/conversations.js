@@ -21,6 +21,7 @@ import {
   creerSalon,
 } from '../donnees/salons.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
+import { creerElement } from './utils.js';
 
 let canalTempsReelActif = null;
 
@@ -126,28 +127,19 @@ function recupererNomInterlocuteur(salon, idUtilisateur) {
 // Crée l'élément de liste d'un salon. Le nom passe par textContent (jamais
 // innerHTML) car c'est un pseudo choisi par un utilisateur.
 function creerElementSalon(salon, nom) {
-  const li = document.createElement('li');
-  li.className = 'conversation-item';
+  const li = creerElement('li', 'conversation-item');
   li.dataset.salonId = salon.id;
 
-  const contenu = document.createElement('div');
-  contenu.className = 'conversation-item__contenu';
+  const ligneNom = creerElement('div', 'conversation-item__ligne');
+  ligneNom.append(
+    creerElement('span', 'conversation-item__nom', nom),
+    creerElement('span', 'conversation-item__heure'),
+  );
 
-  const ligneNom = document.createElement('div');
-  ligneNom.className = 'conversation-item__ligne';
-  const elementNom = document.createElement('span');
-  elementNom.className = 'conversation-item__nom';
-  elementNom.textContent = nom;
-  const elementHeure = document.createElement('span');
-  elementHeure.className = 'conversation-item__heure';
-  ligneNom.append(elementNom, elementHeure);
+  const ligneApercu = creerElement('div', 'conversation-item__ligne');
+  ligneApercu.append(creerElement('p', 'conversation-item__apercu'));
 
-  const ligneApercu = document.createElement('div');
-  ligneApercu.className = 'conversation-item__ligne';
-  const apercu = document.createElement('p');
-  apercu.className = 'conversation-item__apercu';
-  ligneApercu.append(apercu);
-
+  const contenu = creerElement('div', 'conversation-item__contenu');
   contenu.append(ligneNom, ligneApercu);
   li.append(contenu);
   return li;

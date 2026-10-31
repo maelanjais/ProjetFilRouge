@@ -1,4 +1,5 @@
-// contacts.js - appels Supabase pour la table contacts (ajouter contact, récupérer id des contacts).
+// contacts.js - appels Supabase pour la table contacts : ajout d'un contact,
+// récupération des contacts (id seuls ou avec pseudo).
 // Ne touche jamais au DOM : renvoie les données ou l'erreur.
 import { client } from './config-supabase.js';
 

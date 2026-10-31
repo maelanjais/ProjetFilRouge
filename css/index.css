@@ -385,6 +385,14 @@
   font-size: var(--taille-s);
 }
 
+/* Pseudo de l'auteur, au-dessus du texte des messages reçus */
+.message__auteur {
+  display: block;
+  margin-bottom: var(--espace-xxs);
+  font-size: var(--taille-xxs);
+  font-weight: 700;
+}
+
 .message__horodatage {
   font-size: var(--taille-micro);
   font-weight: 600;

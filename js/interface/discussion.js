@@ -4,6 +4,7 @@
 
 import { envoyerMessageSupabase } from '../donnees/messages.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
+import { creerElement } from './utils.js';
 
 // ---- Éléments du DOM ----
 const conteneurMessages = document.querySelector('.discussion__messages');
@@ -22,11 +23,11 @@ let morceauxAudio = [];
 let estEnregistrementEnCours = false;
 let fluxAudio = null;
 
-// Entrée de fichier cachée pour les pièces jointes d'images
+// Entrée de fichier cachée pour les pièces jointes d'images, ouverte par le bouton +
 const champFichier = document.createElement('input');
 champFichier.type = 'file';
 champFichier.accept = 'image/*';
-champFichier.style.display = 'none';
+champFichier.hidden = true;
 document.body.appendChild(champFichier);
 
 // Renvoie l'heure actuelle au format HH:MM.
@@ -44,14 +45,9 @@ export function defilerEnBas() {
   }
 }
 
-// Échappe les caractères HTML pour éviter les injections.
-function echapperHtml(texte) {
-  const p = document.createElement('p');
-  p.textContent = texte;
-  return p.innerHTML;
-}
-
-// Crée et renvoie un élément de message HTML complet.
+// Crée et renvoie l'élément complet d'un message : bulle avec auteur (messages
+// reçus), texte, audio ou image, puis heure. Construit avec le DOM plutôt
+// qu'innerHTML pour que le contenu reçu ne soit jamais interprété comme du HTML.
 export function creerElementMessage({
   texte = '',
   audioUrl = '',
@@ -60,30 +56,34 @@ export function creerElementMessage({
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
-  const elementMessage = document.createElement('div');
-  elementMessage.className = `message ${estEnvoye ? 'message--envoye' : 'message--recu'}`;
-
-  let contenuHtml = '';
+  const elementMessage = creerElement(
+    'div', `message ${estEnvoye ? 'message--envoye' : 'message--recu'}`);
+  const bulle = creerElement('div', 'message__bulle');
 
   if (!estEnvoye && auteurPseudo) {
-    contenuHtml += `<span class="message__auteur" style="font-weight:700;font-size:0.75rem;margin-bottom:2px;display:block;opacity:0.85;">${echapperHtml(auteurPseudo)}</span>`;
+    bulle.append(creerElement('span', 'message__auteur', auteurPseudo));
   }
 
   if (texte) {
-    contenuHtml += `<p class="message__texte">${echapperHtml(texte)}</p>`;
+    bulle.append(creerElement('p', 'message__texte', texte));
   }
 
   if (audioUrl) {
-    contenuHtml += `<audio class="message__audio" controls src="${audioUrl}"></audio>`;
+    const audio = creerElement('audio', 'message__audio');
+    audio.controls = true;
+    audio.src = audioUrl;
+    bulle.append(audio);
   }
 
   if (imageUrl) {
-    contenuHtml += `<img class="message__image" src="${imageUrl}" alt="Pièce jointe">`;
+    const image = creerElement('img', 'message__image');
+    image.src = imageUrl;
+    image.alt = 'Image partagée dans la conversation';
+    bulle.append(image);
   }
 
-  contenuHtml += `<span class="message__horodatage">${heure}</span>`;
-
-  elementMessage.innerHTML = `<div class="message__bulle">${contenuHtml}</div>`;
+  bulle.append(creerElement('span', 'message__horodatage', heure));
+  elementMessage.append(bulle);
   return elementMessage;
 }
 
