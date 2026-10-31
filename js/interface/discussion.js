@@ -14,8 +14,14 @@ const boutonMicro = document.querySelector('.bouton-micro');
 const boutonJoindre = document.querySelector('.bouton-joindre');
 const enteteNom = document.querySelector('.discussion__nom');
 
-// Identifiant du salon actif (1 par défaut)
-window.salonIdActuel = 1;
+// id du salon ouvert, privé à ce module : conversations.js le change avec
+// definirSalonActif(). null tant qu'aucune conversation n'est ouverte.
+let idSalonActif = null;
+
+// Mémorise le salon ouvert, dans lequel les messages seront envoyés.
+export function definirSalonActif(idSalon) {
+  idSalonActif = idSalon;
+}
 
 // État de l'enregistreur vocal
 let mediaRecorder = null;
@@ -198,6 +204,10 @@ if (formulaireMessage) {
     evenement.preventDefault();
     const texte = saisieMessage.value.trim();
     if (!texte) return;
+    if (!idSalonActif) {
+      afficherAvisDiscussion('Ouvrez une conversation avant d\'envoyer un message.');
+      return;
+    }
 
     saisieMessage.value = '';
 
@@ -209,16 +219,14 @@ if (formulaireMessage) {
     // Affichage local immédiat, signalé en échec si la base refuse le message
     const elementMessage = ajouterMessage({ texte, estEnvoye: true, auteurPseudo: pseudo });
 
-    if (window.salonIdActuel) {
-      const { error } = await envoyerMessageSupabase({
-        salonId: window.salonIdActuel,
-        contenu: texte,
-        auteurPseudo: pseudo,
-        auteurId: userId,
-      });
-      if (error) {
-        signalerEchecEnvoi(elementMessage);
-      }
+    const { error } = await envoyerMessageSupabase({
+      salonId: idSalonActif,
+      contenu: texte,
+      auteurPseudo: pseudo,
+      auteurId: userId,
+    });
+    if (error) {
+      signalerEchecEnvoi(elementMessage);
     }
 
     saisieMessage.focus();
@@ -258,10 +266,10 @@ if (boutonMicro) {
         const elementVocal = ajouterMessage({ audioUrl, estEnvoye: true });
 
         // Synchronisation avec Supabase, signalée en échec si la base refuse
-        if (window.salonIdActuel) {
+        if (idSalonActif) {
           const utilisateur = await recupererUtilisateurConnecte();
           const { error } = await envoyerMessageSupabase({
-            salonId: window.salonIdActuel,
+            salonId: idSalonActif,
             contenu: '[Message vocal 🎙️]',
             auteurPseudo: utilisateur?.pseudo ?? 'Moi',
             auteurId: utilisateur?.id ?? null,

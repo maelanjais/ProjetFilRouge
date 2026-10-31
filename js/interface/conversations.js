@@ -7,6 +7,7 @@ import {
   formaterHeureCourante,
   ajouterMessage,
   afficherAvisDiscussion,
+  definirSalonActif,
 } from './discussion.js';
 import { fermerContacts } from './contacts.js';
 import {
@@ -44,7 +45,7 @@ export function mettreAJourCompteur() {
 
 // Charge un salon Supabase avec ses vrais messages et active le temps réel.
 export async function chargerSalonSupabase(salonId, nomSalon) {
-  window.salonIdActuel = salonId;
+  definirSalonActif(salonId);
 
   if (canalTempsReelActif) {
     arreterEcouteTempsReel(canalTempsReelActif);
@@ -108,11 +109,11 @@ export function activerConversation(elementItem) {
     badgeNonLu.remove();
   }
 
-  const salonId = elementItem.dataset.salonId || 1;
+  const salonId = Number(elementItem.dataset.salonId);
   const elementNom = elementItem.querySelector('.conversation-item__nom');
-  const nom = elementNom ? elementNom.textContent.trim() : 'Général';
+  const nom = elementNom ? elementNom.textContent.trim() : '';
 
-  chargerSalonSupabase(Number(salonId), nom);
+  chargerSalonSupabase(salonId, nom);
 }
 
 // Renvoie le pseudo de l'autre participant du salon : chacun voit le nom de son
