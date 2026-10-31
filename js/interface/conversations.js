@@ -6,6 +6,7 @@ import {
   mettreAJourEnteteDiscussion,
   formaterHeureCourante,
   ajouterMessage,
+  afficherAvisDiscussion,
 } from './discussion.js';
 import { fermerContacts } from './contacts.js';
 import {
@@ -56,44 +57,39 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
   mettreAJourEnteteDiscussion(nomSalon);
 
   // Chargement des messages depuis Supabase
-  try {
-    const { data: messages, error } = await recupererMessagesParSalon(salonId);
-    if (!error && Array.isArray(messages)) {
-      const messagesFormates = messages.map((m) => {
-        const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
-          || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
-        return {
-          texte: m.contenu || '',
-          estEnvoye,
-          auteurPseudo: m.auteur_pseudo || 'Membre',
-          heure: formaterHeureCourante(m.date_creation),
-          date: m.date_creation,
-        };
-      });
-      chargerHistoriqueMessages(messagesFormates);
-    }
-  } catch (err) {
-    console.warn('Erreur chargement messages salon :', err);
+  const { data: messages, error } = await recupererMessagesParSalon(salonId);
+  if (error) {
+    chargerHistoriqueMessages([]);
+    afficherAvisDiscussion('Impossible de charger les messages, rechargez la page.');
+  } else {
+    const messagesFormates = messages.map((m) => {
+      const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
+        || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
+      return {
+        texte: m.contenu || '',
+        estEnvoye,
+        auteurPseudo: m.auteur_pseudo || 'Membre',
+        heure: formaterHeureCourante(m.date_creation),
+        date: m.date_creation,
+      };
+    });
+    chargerHistoriqueMessages(messagesFormates);
   }
 
   // Écoute des nouveaux messages en temps réel
-  try {
-    canalTempsReelActif = ecouterNouveauxMessages(salonId, (nouveauMsg) => {
-      const estDeMoi = (userIdActuel && nouveauMsg.auteur_id === userIdActuel)
-        || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
+  canalTempsReelActif = ecouterNouveauxMessages(salonId, (nouveauMsg) => {
+    const estDeMoi = (userIdActuel && nouveauMsg.auteur_id === userIdActuel)
+      || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
 
-      if (!estDeMoi) {
-        ajouterMessage({
-          texte: nouveauMsg.contenu || '',
-          estEnvoye: false,
-          auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
-          heure: formaterHeureCourante(nouveauMsg.date_creation),
-        });
-      }
-    });
-  } catch (err) {
-    console.warn('Temps réel non disponible :', err);
-  }
+    if (!estDeMoi) {
+      ajouterMessage({
+        texte: nouveauMsg.contenu || '',
+        estEnvoye: false,
+        auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
+        heure: formaterHeureCourante(nouveauMsg.date_creation),
+      });
+    }
+  });
 }
 
 // Active une conversation sélectionnée dans la liste.

@@ -173,6 +173,18 @@ function signalerEchecEnvoi(elementMessage) {
   elementMessage.querySelector('.message__bulle').append(avertissement);
 }
 
+// Ajoute un avis (erreur de chargement, micro indisponible...) à la suite de la
+// discussion, à la place des alert() : le message reste lisible dans la page.
+export function afficherAvisDiscussion(texte) {
+  if (!conteneurMessages) return;
+  const avis = document.createElement('p');
+  avis.className = 'discussion__avis';
+  avis.setAttribute('role', 'alert');
+  avis.textContent = texte;
+  conteneurMessages.append(avis);
+  defilerEnBas();
+}
+
 // Met à jour l'en-tête de la discussion avec le nom du contact ou du salon.
 export function mettreAJourEnteteDiscussion(nom) {
   if (enteteNom) enteteNom.textContent = nom;
@@ -194,20 +206,18 @@ if (formulaireMessage) {
     const pseudo = utilisateur?.pseudo ?? 'Moi';
     const userId = utilisateur?.id ?? null;
 
-    // Affichage local immédiat
-    ajouterMessage({ texte, estEnvoye: true, auteurPseudo: pseudo });
+    // Affichage local immédiat, signalé en échec si la base refuse le message
+    const elementMessage = ajouterMessage({ texte, estEnvoye: true, auteurPseudo: pseudo });
 
-    // Envoi dans Supabase si un salon est actif
     if (window.salonIdActuel) {
-      try {
-        await envoyerMessageSupabase({
-          salonId: window.salonIdActuel,
-          contenu: texte,
-          auteurPseudo: pseudo,
-          auteurId: userId,
-        });
-      } catch (erreur) {
-        console.error('Erreur lors de l’envoi à Supabase :', erreur);
+      const { error } = await envoyerMessageSupabase({
+        salonId: window.salonIdActuel,
+        contenu: texte,
+        auteurPseudo: pseudo,
+        auteurId: userId,
+      });
+      if (error) {
+        signalerEchecEnvoi(elementMessage);
       }
     }
 
@@ -219,7 +229,8 @@ if (formulaireMessage) {
 if (boutonMicro) {
   boutonMicro.addEventListener('click', async () => {
     if (!navigator.mediaDevices || !window.MediaRecorder) {
-      alert("L'enregistrement vocal n'est pas pris en charge par votre navigateur.");
+      afficherAvisDiscussion(
+        'L\'enregistrement vocal n\'est pas pris en charge par votre navigateur.');
       return;
     }
 
@@ -244,20 +255,19 @@ if (boutonMicro) {
         const blob = new Blob(morceauxAudio, { type: typeMime });
         const audioUrl = URL.createObjectURL(blob);
 
-        ajouterMessage({ audioUrl, estEnvoye: true });
+        const elementVocal = ajouterMessage({ audioUrl, estEnvoye: true });
 
-        // Synchronisation avec Supabase
+        // Synchronisation avec Supabase, signalée en échec si la base refuse
         if (window.salonIdActuel) {
-          try {
-            const utilisateur = await recupererUtilisateurConnecte();
-            await envoyerMessageSupabase({
-              salonId: window.salonIdActuel,
-              contenu: '[Message vocal 🎙️]',
-              auteurPseudo: utilisateur?.pseudo ?? 'Moi',
-              auteurId: utilisateur?.id ?? null,
-            });
-          } catch (e) {
-            console.warn(e);
+          const utilisateur = await recupererUtilisateurConnecte();
+          const { error } = await envoyerMessageSupabase({
+            salonId: window.salonIdActuel,
+            contenu: '[Message vocal 🎙️]',
+            auteurPseudo: utilisateur?.pseudo ?? 'Moi',
+            auteurId: utilisateur?.id ?? null,
+          });
+          if (error) {
+            signalerEchecEnvoi(elementVocal);
           }
         }
 
@@ -277,9 +287,9 @@ if (boutonMicro) {
       boutonMicro.classList.add('enregistrement');
       boutonMicro.title = 'Arrêter et envoyer le message vocal';
       saisieMessage.placeholder = 'Enregistrement en cours... Cliquez sur le micro pour envoyer';
-    } catch (erreur) {
-      console.error('Erreur micro :', erreur);
-      alert('Impossible d’accéder au microphone.');
+    } catch {
+      // getUserMedia échoue si l'utilisateur refuse l'accès ou s'il n'y a pas de micro
+      afficherAvisDiscussion('Impossible d\'accéder au microphone.');
     }
   });
 }

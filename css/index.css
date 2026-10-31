@@ -322,6 +322,18 @@
   gap: var(--espace-l);
 }
 
+/* Avis dans la discussion (erreur de chargement, micro indisponible...) */
+.discussion__avis {
+  align-self: center;
+  padding: var(--espace-xs) var(--espace-m);
+  border-radius: var(--rayon-s);
+  background-color: var(--couleur-danger-fond);
+  color: var(--couleur-danger-foncee);
+  font-size: var(--taille-xs);
+  font-weight: 700;
+  text-align: center;
+}
+
 /* Séparateur de jour : libellé centré entre deux traits */
 .separateur-date {
   display: flex;
