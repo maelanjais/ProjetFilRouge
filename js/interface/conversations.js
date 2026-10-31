@@ -67,6 +67,7 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
           estEnvoye,
           auteurPseudo: m.auteur_pseudo || 'Membre',
           heure: formaterHeureCourante(m.date_creation),
+          date: m.date_creation,
         };
       });
       chargerHistoriqueMessages(messagesFormates);

@@ -322,6 +322,21 @@
   gap: var(--espace-l);
 }
 
+/* Séparateur de jour : libellé centré entre deux traits */
+.separateur-date {
+  display: flex;
+  align-items: center;
+  gap: var(--espace-s);
+}
+
+.separateur-date__texte {
+  font-size: var(--taille-micro);
+  font-weight: 700;
+  letter-spacing: var(--espacement-lettres);
+  text-transform: uppercase;
+  color: var(--couleur-texte-discret);
+}
+
 .separateur-date::before,
 .separateur-date::after {
   content: "";
@@ -369,6 +384,22 @@
 
 .message--envoye .message__horodatage {
   color: var(--couleur-texte-inverse-discret);
+}
+
+.message--echec .message__bulle {
+  background-color: var(--couleur-danger-fond);
+  color: var(--couleur-danger-foncee);
+}
+
+.message--echec .message__horodatage {
+  color: var(--couleur-danger-foncee);
+}
+
+.message__echec {
+  display: block;
+  margin-top: var(--espace-xxs);
+  font-size: var(--taille-micro);
+  font-weight: 700;
 }
 
 /* ---- Barre de saisie en bas ---- */

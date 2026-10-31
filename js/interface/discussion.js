@@ -98,7 +98,9 @@ export function ajouterMessage({
 }) {
   if (!conteneurMessages) return;
 
-  const element = creerElementMessage({ texte, audioUrl, imageUrl, auteurPseudo, estEnvoye, heure });
+  const element = creerElementMessage({
+    texte, audioUrl, imageUrl, auteurPseudo, estEnvoye, heure,
+  });
   conteneurMessages.appendChild(element);
   defilerEnBas();
 
@@ -110,24 +112,65 @@ export function ajouterMessage({
       heure,
     },
   }));
+  return element;
 }
 
-// Remplace les messages affichés dans la discussion par une liste donnée.
+// Renvoie le libellé du jour d'une date : « Aujourd'hui », « Hier » ou la date
+// complète (« 12 octobre 2026 »). Les dates sont comparées sans l'heure.
+function formaterLibelleJour(date) {
+  const jour = new Date(date);
+  const aujourdHui = new Date();
+  const hier = new Date();
+  hier.setDate(aujourdHui.getDate() - 1);
+
+  if (jour.toDateString() === aujourdHui.toDateString()) {
+    return 'Aujourd\'hui';
+  }
+  if (jour.toDateString() === hier.toDateString()) {
+    return 'Hier';
+  }
+  return jour.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// Crée le séparateur qui annonce le jour des messages qui le suivent.
+function creerSeparateurDate(libelle) {
+  const separateur = document.createElement('div');
+  separateur.className = 'separateur-date';
+  const texte = document.createElement('span');
+  texte.className = 'separateur-date__texte';
+  texte.textContent = libelle;
+  separateur.append(texte);
+  return separateur;
+}
+
+// Remplace les messages affichés par une liste donnée (triée par date croissante).
+// Un séparateur est inséré à chaque changement de jour.
 export function chargerHistoriqueMessages(listeMessages) {
   if (!conteneurMessages) return;
 
-  conteneurMessages.innerHTML = `
-    <div class="separateur-date">
-      <span class="separateur-date__texte">AUJOURD'HUI</span>
-    </div>
-  `;
-
-  listeMessages.forEach((msg) => {
-    const el = creerElementMessage(msg);
-    conteneurMessages.appendChild(el);
-  });
+  conteneurMessages.replaceChildren();
+  let libelleJourPrecedent = '';
+  for (const message of listeMessages) {
+    const libelleJour = formaterLibelleJour(message.date);
+    if (libelleJour !== libelleJourPrecedent) {
+      conteneurMessages.append(creerSeparateurDate(libelleJour));
+      libelleJourPrecedent = libelleJour;
+    }
+    conteneurMessages.append(creerElementMessage(message));
+  }
 
   defilerEnBas();
+}
+
+// Signale dans la bulle qu'un message n'a pas pu être enregistré : il est affiché
+// localement mais l'interlocuteur ne le recevra pas.
+function signalerEchecEnvoi(elementMessage) {
+  elementMessage.classList.add('message--echec');
+  const avertissement = document.createElement('span');
+  avertissement.className = 'message__echec';
+  avertissement.setAttribute('role', 'alert');
+  avertissement.textContent = 'Non envoyé, vérifiez votre connexion.';
+  elementMessage.querySelector('.message__bulle').append(avertissement);
 }
 
 // Met à jour l'en-tête de la discussion avec le nom du contact ou du salon.
