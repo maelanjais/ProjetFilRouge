@@ -1,5 +1,6 @@
 // inscription.js - gère le formulaire d'inscription : validation et affichage du résultat.
 import { inscrireUtilisateur } from '../donnees/authentification.js';
+import { trouverProfilParPseudo } from '../donnees/profils.js';
 import { afficherErreur, traduireErreurAuth } from './utils.js';
 
 const formulaire = document.querySelector('.formulaire-auth');
@@ -17,6 +18,13 @@ formulaire.addEventListener('submit', async (evenement) => {
 
   if (erreurValidationInscription) {
     afficherErreur(erreurValidationInscription);
+    return;
+  }
+
+  // Vérifie si le pseudo est déjà pris avant l'inscription.
+  const { data: profilExistant } = await trouverProfilParPseudo(nomUtilisateur);
+  if (profilExistant) {
+    afficherErreur('Ce pseudo est déjà pris.');
     return;
   }
 

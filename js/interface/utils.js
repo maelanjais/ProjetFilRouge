@@ -8,6 +8,9 @@ const MESSAGES_ERREUR_AUTH = {
   weak_password: 'Mot de passe trop faible.',
   email_address_invalid:
     'Adresse courriel invalide. Vérifiez le format ou utilisez une adresse valide.',
+  // Erreur générique renvoyée quand le déclencheur de création du profil échoue
+  // (« Database error saving new user ») : en pratique, un pseudo déjà pris.
+  unexpected_failure: 'Inscription impossible : ce pseudo est peut-être déjà pris.',
 };
 
 // Renvoie un message compréhensible pour une erreur Supabase ; message d'origine à défaut.

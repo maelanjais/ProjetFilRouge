@@ -15,6 +15,19 @@ export async function rechercherProfils(texte, idUtilisateurConnecte) {
     .limit(NB_MAX_RESULTATS_RECHERCHE);
 }
 
+// Cherche un profil portant exactement ce pseudo, sans tenir compte des majuscules.
+// % et _ sont des jokers pour ilike : on les échappe pour les comparer tels quels.
+// Renvoie { data: { id } ou null si le pseudo est libre, error }.
+export async function trouverProfilParPseudo(pseudo) {
+  const pseudoEchappe = pseudo.replace(/[\\%_]/g, '\\$&');
+  return client
+    .from('profils')
+    .select('id')
+    .ilike('nom_utilisateur', pseudoEchappe)
+    .limit(1)
+    .maybeSingle();
+}
+
 // Remplace le pseudo de l'utilisateur connecté. Renvoie { error } ; error.code vaut
 // '23505' si le pseudo est déjà pris (index unique) et '23514' s'il ne fait pas
 // 3 à 30 caractères (contrainte check).
