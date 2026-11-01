@@ -38,13 +38,6 @@ async function afficherProfilUtilisateur(utilisateur) {
 
 // Redirige vers la page de connexion si aucun utilisateur n'est connecté.
 async function verifierUtilisateurConnecte() {
-  // Permet de tester ou prévisualiser l'interface avec ?demo dans l'URL
-  const params = new URLSearchParams(window.location.search);
-  if (params.has('demo')) {
-    document.body.classList.add('session-verifiee');
-    return;
-  }
-
   const { data, error } = await recupererSession();
   if (error || !data?.session) {
     window.location.replace('connexion.html');
