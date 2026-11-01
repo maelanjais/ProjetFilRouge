@@ -122,6 +122,11 @@
   gap: var(--espace-xs);
 }
 
+.recherche:focus-within {
+  outline: 2px solid var(--couleur-primaire);
+  outline-offset: 2px;
+}
+
 .recherche__icone {
   color: var(--couleur-texte-discret);
   flex-shrink: 0;
@@ -472,10 +477,15 @@
   flex: 1;
   border: none;
   background: transparent;
-  outline: none;
   font-size: var(--taille-s);
   color: var(--couleur-texte);
   padding: var(--espace-xs) var(--espace-xxs);
+  border-radius: var(--rayon-s);
+}
+
+.saisie-message:focus-visible {
+  outline: 2px solid var(--couleur-primaire);
+  outline-offset: 2px;
 }
 
 .saisie-message::placeholder {

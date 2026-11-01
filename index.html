@@ -61,7 +61,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
             <input type="search" id="champ-recherche" class="recherche__champ"
-              placeholder="Rechercher une conversation">
+              placeholder="Rechercher une conversation" aria-label="Rechercher une conversation">
           </div>
 
           <button type="button" class="bouton-contacts" id="bouton-ouvrir-contacts" aria-label="Gérer les contacts">
@@ -104,23 +104,26 @@
       </header>
 
       <!-- Historique des messages -->
-      <div class="discussion__messages">
+      <div class="discussion__messages" role="log" aria-live="polite"
+        aria-label="Messages de la conversation">
       </div>
 
       <!-- Barre de saisie en bas -->
       <footer class="barre-saisie">
         <form class="formulaire-message" id="formulaire-message">
-          <button type="button" class="bouton-joindre">+</button>
-          <button type="button" class="bouton-micro">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
+          <button type="button" class="bouton-joindre" aria-label="Joindre une image">+</button>
+          <button type="button" class="bouton-micro" aria-label="Enregistrer un message vocal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+              focusable="false">
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
               <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
               <line x1="12" y1="19" x2="12" y2="23"></line>
               <line x1="8" y1="23" x2="16" y2="23"></line>
             </svg>
           </button>
-          <input type="text" id="saisie-message" class="saisie-message" placeholder="Écrire un message" required>
+          <input type="text" id="saisie-message" class="saisie-message"
+            placeholder="Écrire un message" aria-label="Message à envoyer" required>
           <button type="submit" class="bouton-envoyer">
             <span>ENVOYER</span>
             <span class="bouton-envoyer__fleche">&rarr;</span>

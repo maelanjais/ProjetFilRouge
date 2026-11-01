@@ -286,14 +286,14 @@ if (boutonMicro) {
 
         estEnregistrementEnCours = false;
         boutonMicro.classList.remove('enregistrement');
-        boutonMicro.title = 'Enregistrer un message vocal';
+        boutonMicro.setAttribute('aria-label', 'Enregistrer un message vocal');
         saisieMessage.placeholder = 'Écrire un message';
       });
 
       mediaRecorder.start();
       estEnregistrementEnCours = true;
       boutonMicro.classList.add('enregistrement');
-      boutonMicro.title = 'Arrêter et envoyer le message vocal';
+      boutonMicro.setAttribute('aria-label', 'Arrêter et envoyer le message vocal');
       saisieMessage.placeholder = 'Enregistrement en cours... Cliquez sur le micro pour envoyer';
     } catch {
       // getUserMedia échoue si l'utilisateur refuse l'accès ou s'il n'y a pas de micro
