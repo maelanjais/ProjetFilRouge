@@ -739,16 +739,6 @@
   background-color: var(--couleur-survol);
 }
 
-.panneau-contacts__nom {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--taille-s);
-  font-weight: 700;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* Conversation masquée par le filtre de recherche */
 .conversation-item.masque {
   display: none;

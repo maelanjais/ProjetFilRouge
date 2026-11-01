@@ -26,14 +26,6 @@ import { creerElement } from './utils.js';
 
 let canalTempsReelActif = null;
 
-// Renvoie le nom de la conversation active.
-export function recupererNomConversationActive() {
-  const itemActif = document.querySelector('.conversation-item--active');
-  if (!itemActif) return 'Général';
-  const elementNom = itemActif.querySelector('.conversation-item__nom');
-  return elementNom ? elementNom.textContent.trim() : 'Général';
-}
-
 // Met à jour le compteur de conversations visibles.
 export function mettreAJourCompteur() {
   const compteur = document.querySelector('.conversations__compteur');
