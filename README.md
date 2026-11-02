@@ -55,10 +55,18 @@ js/
     messages.js        # Requêtes Supabase et temps réel des messages
     profils.js         # Recherche de profils utilisateurs
     salons.js          # Récupération et création des salons
+sql/
+  creation-base.sql    # Script de création complète de la base Supabase
 maquettes/             # Maquettes des écrans (connexion, inscription, accueil)
 ```
 
 ## Base de données (Supabase)
+
+Le script [`sql/creation-base.sql`](sql/creation-base.sql) crée toute la base
+décrite ci-dessous (tables, vue, déclencheur, temps réel et règles RLS). Pour
+installer le projet sur un nouveau compte Supabase, il suffit de l'exécuter une
+fois dans le **SQL Editor** d'un projet vide, puis de reporter l'URL et la clé
+publishable du projet dans `js/donnees/config-supabase.js`.
 
 ### Tables
 
@@ -129,6 +137,24 @@ Celle-ci crée la ligne correspondante dans `profils` à partir du pseudo des
 métadonnées. La fonction est en `security definer` pour pouvoir écrire dans
 `profils` quel que soit l'utilisateur. Si le pseudo est déjà pris, l'inscription
 échoue grâce à la contrainte d'unicité.
+
+### Sécurité : Row Level Security (RLS)
+
+Le RLS est activé sur les quatre tables : la clé publique présente dans le code
+ne donne accès qu'aux lignes autorisées par les règles ci-dessous. `auth.uid()`
+désigne l'utilisateur connecté.
+
+| Table | Lecture | Ajout | Modification | Suppression |
+| --- | --- | --- | --- | --- |
+| `profils` | Tout le monde, y compris non connecté (recherche de contacts, vérification du pseudo à l'inscription) | Uniquement par le déclencheur | Son propre profil | Non |
+| `contacts` | Ses propres contacts | En tant que propriétaire | Non | Ses propres contacts |
+| `salons` | Les salons dont on est l'un des deux participants | En tant que `cree_par` | Non | Non |
+| `messages` | Les messages des salons dont on est participant | Dans ses salons, en tant qu'auteur | Non | Non |
+
+La vue `derniers_messages` est en `security_invoker` : elle applique les règles
+de `messages`, donc chacun ne voit que l'aperçu de ses propres conversations. Le
+temps réel respecte aussi ces règles : un utilisateur ne reçoit que les messages
+qu'il a le droit de lire.
 
 ## Lancer le projet en local
 
