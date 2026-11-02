@@ -132,3 +132,47 @@
   font-size: var(--taille-xs);
   color: var(--couleur-texte-discret);
 }
+
+
+/* ---- Adaptation Responsive ---- */
+@media (max-width: 768px) {
+  .auth {
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+  }
+
+  .auth__accroche {
+    padding: var(--espace-xl) var(--espace-m);
+    min-height: auto;
+    gap: var(--espace-m);
+  }
+
+  .auth__slogan {
+    font-size: clamp(2rem, 7vw, 3rem);
+    margin-top: var(--espace-s);
+  }
+
+  .auth__slogan::after {
+    margin-top: var(--espace-m);
+    width: 3rem;
+  }
+
+  .auth__contenu {
+    padding: var(--espace-xl) var(--espace-m);
+    max-width: 100%;
+    gap: var(--espace-m);
+  }
+
+  .auth__titre {
+    font-size: var(--taille-xl);
+    padding-bottom: var(--espace-m);
+  }
+
+  .formulaire-auth {
+    gap: var(--espace-m);
+  }
+
+  .champ__saisie {
+    font-size: 1rem; /* Évite le zoom automatique sur iOS */
+  }
+}

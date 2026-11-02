@@ -29,6 +29,37 @@ let morceauxAudio = [];
 let estEnregistrementEnCours = false;
 let fluxAudio = null;
 
+// Détecte le meilleur type MIME audio pris en charge par le navigateur
+function obtenirTypeMimeAudioSupporte() {
+  if (typeof MediaRecorder === 'undefined' || !MediaRecorder.isTypeSupported) {
+    return '';
+  }
+  const types = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/mp4',
+    'audio/aac',
+    'audio/ogg;codecs=opus',
+    'audio/ogg',
+  ];
+  for (const type of types) {
+    if (MediaRecorder.isTypeSupported(type)) {
+      return type;
+    }
+  }
+  return '';
+}
+
+// Convertit un Blob en Data URL (base64) pour la transmission et le stockage
+function blobEnDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const lecteur = new FileReader();
+    lecteur.onloadend = () => resolve(lecteur.result);
+    lecteur.onerror = reject;
+    lecteur.readAsDataURL(blob);
+  });
+}
+
 // Entrée de fichier cachée pour les pièces jointes d'images, ouverte par le bouton +
 const champFichier = document.createElement('input');
 champFichier.type = 'file';
@@ -62,23 +93,38 @@ export function creerElementMessage({
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
+  // Si le message est un vocal encodé (data:audio/... ou blob:)
+  if (!audioUrl && typeof texte === 'string' && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))) {
+    audioUrl = texte;
+    texte = '';
+  }
+
+  // Ancien message sans audio dans la base : afficher un texte de secours
+  if (texte === '[Message vocal 🎙️]' && !audioUrl) {
+    texte = 'Message vocal indisponible (ancien format)';
+  }
+
   const elementMessage = creerElement(
     'div', `message ${estEnvoye ? 'message--envoye' : 'message--recu'}`);
   const bulle = creerElement('div', 'message__bulle');
+
+  if (audioUrl) {
+    bulle.classList.add('message__bulle--audio');
+  }
 
   if (!estEnvoye && auteurPseudo) {
     bulle.append(creerElement('span', 'message__auteur', auteurPseudo));
   }
 
-  if (texte) {
-    bulle.append(creerElement('p', 'message__texte', texte));
-  }
-
+  // Ne pas afficher de texte si c'est un message vocal
   if (audioUrl) {
     const audio = creerElement('audio', 'message__audio');
     audio.controls = true;
+    audio.preload = 'metadata';
     audio.src = audioUrl;
     bulle.append(audio);
+  } else if (texte) {
+    bulle.append(creerElement('p', 'message__texte', texte));
   }
 
   if (imageUrl) {
@@ -110,7 +156,10 @@ export function ajouterMessage({
   conteneurMessages.appendChild(element);
   defilerEnBas();
 
-  const apercuTexte = texte || (audioUrl ? 'Message vocal 🎙️' : 'Photo 📷');
+  const estAudio = Boolean(audioUrl || (texte && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))));
+  const apercuTexte = estAudio
+    ? 'Message vocal 🎙️'
+    : (texte || (imageUrl ? 'Photo 📷' : ''));
   document.dispatchEvent(new CustomEvent('message-ajoute', {
     detail: {
       texte: apercuTexte,
@@ -250,7 +299,9 @@ if (boutonMicro) {
     try {
       fluxAudio = await navigator.mediaDevices.getUserMedia({ audio: true });
       morceauxAudio = [];
-      mediaRecorder = new MediaRecorder(fluxAudio);
+      const typeMimePrefere = obtenirTypeMimeAudioSupporte();
+      const options = typeMimePrefere ? { mimeType: typeMimePrefere } : undefined;
+      mediaRecorder = new MediaRecorder(fluxAudio, options);
 
       mediaRecorder.addEventListener('dataavailable', (evenement) => {
         if (evenement.data && evenement.data.size > 0) {
@@ -259,25 +310,8 @@ if (boutonMicro) {
       });
 
       mediaRecorder.addEventListener('stop', async () => {
-        const typeMime = mediaRecorder.mimeType || 'audio/webm';
+        const typeMime = mediaRecorder.mimeType || typeMimePrefere || 'audio/webm';
         const blob = new Blob(morceauxAudio, { type: typeMime });
-        const audioUrl = URL.createObjectURL(blob);
-
-        const elementVocal = ajouterMessage({ audioUrl, estEnvoye: true });
-
-        // Synchronisation avec Supabase, signalée en échec si la base refuse
-        if (idSalonActif) {
-          const utilisateur = await recupererUtilisateurConnecte();
-          const { error } = await envoyerMessageSupabase({
-            salonId: idSalonActif,
-            contenu: '[Message vocal 🎙️]',
-            auteurPseudo: utilisateur?.pseudo ?? 'Moi',
-            auteurId: utilisateur?.id ?? null,
-          });
-          if (error) {
-            signalerEchecEnvoi(elementVocal);
-          }
-        }
 
         if (fluxAudio) {
           fluxAudio.getTracks().forEach((track) => track.stop());
@@ -288,6 +322,38 @@ if (boutonMicro) {
         boutonMicro.classList.remove('enregistrement');
         boutonMicro.setAttribute('aria-label', 'Enregistrer un message vocal');
         saisieMessage.placeholder = 'Écrire un message';
+
+        if (blob.size === 0) return;
+
+        try {
+          const audioDataUrl = await blobEnDataUrl(blob);
+          const utilisateur = await recupererUtilisateurConnecte();
+          const pseudo = utilisateur?.pseudo ?? 'Moi';
+          const userId = utilisateur?.id ?? null;
+
+          // Affichage local immédiat avec le lecteur audio seul (sans texte)
+          const elementVocal = ajouterMessage({
+            audioUrl: audioDataUrl,
+            estEnvoye: true,
+            auteurPseudo: pseudo,
+          });
+
+          // Synchronisation avec Supabase des vraies données audio
+          if (idSalonActif) {
+            const { error } = await envoyerMessageSupabase({
+              salonId: idSalonActif,
+              contenu: audioDataUrl,
+              auteurPseudo: pseudo,
+              auteurId: userId,
+            });
+            if (error) {
+              signalerEchecEnvoi(elementVocal);
+            }
+          }
+        } catch (erreur) {
+          console.error('Erreur traitement audio :', erreur);
+          afficherAvisDiscussion('Impossible de finaliser le message vocal.');
+        }
       });
 
       mediaRecorder.start();

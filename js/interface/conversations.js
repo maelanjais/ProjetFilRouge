@@ -59,8 +59,10 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     const messagesFormates = messages.map((m) => {
       const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
         || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
+      const estAudio = m.contenu && (m.contenu.startsWith('data:audio/') || m.contenu.startsWith('blob:'));
       return {
-        texte: m.contenu || '',
+        texte: estAudio ? '' : (m.contenu || ''),
+        audioUrl: estAudio ? m.contenu : '',
         estEnvoye,
         auteurPseudo: m.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(m.date_creation),
@@ -76,8 +78,10 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
       || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
 
     if (!estDeMoi) {
+      const estAudio = nouveauMsg.contenu && (nouveauMsg.contenu.startsWith('data:audio/') || nouveauMsg.contenu.startsWith('blob:'));
       ajouterMessage({
-        texte: nouveauMsg.contenu || '',
+        texte: estAudio ? '' : (nouveauMsg.contenu || ''),
+        audioUrl: estAudio ? nouveauMsg.contenu : '',
         estEnvoye: false,
         auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(nouveauMsg.date_creation),
@@ -99,6 +103,12 @@ export function activerConversation(elementItem) {
   const badgeNonLu = elementItem.querySelector('.badge-non-lu');
   if (badgeNonLu) {
     badgeNonLu.remove();
+  }
+
+  // En vue mobile, bascule l'affichage sur la discussion
+  const contenuApp = document.querySelector('.contenu-app');
+  if (contenuApp) {
+    contenuApp.classList.add('vue-discussion');
   }
 
   const salonId = Number(elementItem.dataset.salonId);
@@ -138,6 +148,15 @@ function creerElementSalon(salon, nom) {
   return li;
 }
 
+// Renvoie un texte lisible pour l'aperçu dans la liste des conversations
+function formaterApercuContenu(contenu) {
+  if (!contenu) return '';
+  if (contenu.startsWith('data:audio/') || contenu.startsWith('blob:')) {
+    return 'Message vocal 🎙️';
+  }
+  return contenu;
+}
+
 // Remplit l'aperçu et l'heure de chaque conversation avec le dernier message
 // (vue derniers_messages).
 function afficherApercus(derniersMessages, idUtilisateur) {
@@ -147,9 +166,10 @@ function afficherApercus(derniersMessages, idUtilisateur) {
 
     const apercu = element.querySelector('.conversation-item__apercu');
     const elementHeure = element.querySelector('.conversation-item__heure');
+    const texteApercu = formaterApercuContenu(message.contenu);
     apercu.textContent = message.auteur_id === idUtilisateur
-      ? `Vous : ${message.contenu}`
-      : message.contenu;
+      ? `Vous : ${texteApercu}`
+      : texteApercu;
     elementHeure.textContent = formaterHeureCourante(message.date_creation);
   }
 }
@@ -185,7 +205,16 @@ async function initialiserSalonsSupabase() {
 
   const premierElement = listeConversations.querySelector('.conversation-item');
   if (premierElement) {
-    activerConversation(premierElement);
+    // Sur grand écran, activation directe. Sur mobile, préchargement sans masquer la liste
+    if (window.innerWidth > 768) {
+      activerConversation(premierElement);
+    } else {
+      const salonId = Number(premierElement.dataset.salonId);
+      const elementNom = premierElement.querySelector('.conversation-item__nom');
+      const nom = elementNom ? elementNom.textContent.trim() : '';
+      premierElement.classList.add('conversation-item--active');
+      chargerSalonSupabase(salonId, nom);
+    }
   }
 }
 
@@ -273,7 +302,18 @@ function attacherEcouteurs() {
     });
   }
 
-  // 4. Mise à jour de l'aperçu du dernier message
+  // 4. Bouton retour en vue mobile
+  const boutonRetour = document.getElementById('bouton-retour-conversations');
+  if (boutonRetour) {
+    boutonRetour.addEventListener('click', () => {
+      const contenuApp = document.querySelector('.contenu-app');
+      if (contenuApp) {
+        contenuApp.classList.remove('vue-discussion');
+      }
+    });
+  }
+
+  // 5. Mise à jour de l'aperçu du dernier message
   document.addEventListener('message-ajoute', (evenement) => {
     const { texte, estEnvoye } = evenement.detail;
     const itemActif = document.querySelector('.conversation-item--active');
@@ -281,8 +321,9 @@ function attacherEcouteurs() {
     if (itemActif) {
       const apercu = itemActif.querySelector('.conversation-item__apercu');
       const elementHeure = itemActif.querySelector('.conversation-item__heure');
+      const texteApercu = formaterApercuContenu(texte);
       if (apercu) {
-        apercu.textContent = estEnvoye ? `Vous : ${texte}` : texte;
+        apercu.textContent = estEnvoye ? `Vous : ${texteApercu}` : texteApercu;
       }
       if (elementHeure) {
         elementHeure.textContent = "À l'instant";

@@ -754,10 +754,38 @@
   display: none;
 }
 
+/* Bouton retour vers la liste des conversations (mobile) */
+.bouton-retour-conversations {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--hauteur-cible-tactile);
+  height: var(--hauteur-cible-tactile);
+  border: none;
+  border-radius: var(--rayon-cercle);
+  background-color: var(--couleur-fond-clair);
+  color: var(--couleur-texte);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color var(--duree-transition);
+}
+
+.bouton-retour-conversations:hover {
+  background-color: var(--couleur-bordure);
+}
+
+/* Bulle dédiée aux messages vocaux */
+.message__bulle--audio {
+  min-width: 250px;
+  max-width: min(340px, 85%);
+  padding: var(--espace-xs) var(--espace-s);
+}
+
 /* Pièces jointes et messages vocaux */
 .message__audio {
-  max-width: 100%;
-  height: 38px;
+  width: 100%;
+  min-width: 220px;
+  height: 40px;
   border-radius: var(--rayon-pilule);
   margin-top: var(--espace-xxs);
   margin-bottom: var(--espace-xxs);
@@ -899,4 +927,131 @@
   background-color: transparent;
   color: var(--couleur-texte-discret);
   cursor: default;
+}
+
+/* ---- Adaptation Responsive ---- */
+@media (max-width: 768px) {
+  .entete-app {
+    height: 3.5rem;
+    padding: 0 var(--espace-m);
+  }
+
+  .logo {
+    font-size: var(--taille-m);
+    letter-spacing: var(--espacement-lettres);
+  }
+
+  .entete-profil {
+    gap: var(--espace-xs);
+    padding: var(--espace-xxs);
+  }
+
+  /* Navigation mobile : affichage exclusif liste OU discussion */
+  .barre-laterale {
+    width: 100%;
+    border-right: none;
+    padding: var(--espace-m) var(--espace-s);
+  }
+
+  .discussion {
+    display: none;
+    width: 100%;
+  }
+
+  /* Quand une conversation est ouverte en vue mobile */
+  .contenu-app.vue-discussion .barre-laterale {
+    display: none;
+  }
+
+  .contenu-app.vue-discussion .discussion {
+    display: flex;
+  }
+
+  .bouton-retour-conversations {
+    display: inline-flex;
+  }
+
+  .discussion__entete {
+    height: 3.5rem;
+    padding: 0 var(--espace-m);
+    gap: var(--espace-s);
+  }
+
+  .discussion__nom {
+    font-size: var(--taille-l);
+  }
+
+  .discussion__messages {
+    padding: var(--espace-m) var(--espace-s);
+    gap: var(--espace-m);
+  }
+
+  .message__bulle {
+    max-width: 85%;
+  }
+
+  .message__bulle--audio {
+    min-width: 230px;
+    max-width: 90%;
+  }
+
+  .barre-saisie {
+    padding: var(--espace-xs) var(--espace-s);
+  }
+
+  .formulaire-message {
+    gap: var(--espace-xs);
+  }
+
+  .saisie-message {
+    font-size: 1rem; /* Évite le zoom automatique sur iOS */
+  }
+
+  .bouton-envoyer {
+    padding: var(--espace-s) var(--espace-m);
+  }
+
+  /* Panneaux coulissants plein écran sur mobile */
+  .panneau-parametres,
+  .panneau-contacts {
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .panneau-parametres__entete,
+  .panneau-contacts__entete {
+    height: 3.5rem;
+    padding: 0 var(--espace-m);
+  }
+
+  /* Fenêtre modale de recherche de contact */
+  .recherche-contact {
+    width: calc(100% - 2rem);
+    padding: var(--espace-m);
+  }
+}
+
+@media (max-width: 480px) {
+  .entete-profil__nom {
+    display: none;
+  }
+
+  .bouton-envoyer span:not(.bouton-envoyer__fleche) {
+    display: none;
+  }
+
+  .bouton-envoyer {
+    padding: var(--espace-s);
+    border-radius: var(--rayon-cercle);
+    min-width: var(--hauteur-cible-tactile);
+    justify-content: center;
+  }
+
+  .bouton-envoyer__fleche {
+    font-size: var(--taille-l);
+  }
+
+  .recherche {
+    padding: var(--espace-xs) var(--espace-s);
+  }
 }
