@@ -13,14 +13,22 @@ persistance des données.
 
 ## Fonctionnalités
 
-| Fonctionnalité
-| --- |
-| Inscription / connexion
-| Liste de contacts
-| Liste des salons de conversation
-| Envoi et réception de messages en temps réel
-| Panneau des paramètres
-| Fonctionnalité supplémentaire : messages vocaux
+### Principales
+
+| Fonctionnalité | Détail |
+| --- | --- |
+| Inscription / connexion | Compte Supabase Auth avec pseudo unique ; la messagerie redirige vers la connexion si personne n'est connecté |
+| Liste de contacts | Ajout d'un contact en recherchant son pseudo ; un contact déjà ajouté est signalé |
+| Liste des conversations | Conversations privées à deux ; chacun ne voit que les siennes, nommées d'après son interlocuteur, avec l'aperçu et l'heure du dernier message ; recherche par nom |
+| Messages en temps réel | Envoi et réception instantanés ; un message non enregistré est signalé dans sa bulle |
+| Horodatage | Heure de chaque message et séparateurs de jour (« Aujourd'hui », « Hier », date) |
+
+### Secondaires
+
+| Fonctionnalité | Détail |
+| --- | --- |
+| Partage d'images | Envoi d'une image (1 Mo maximum), reçue en temps réel et conservée dans l'historique |
+| Paramètres | Changement de pseudo, mode sombre, déconnexion |
 
 ### Fonctionnalité supplémentaire : messages vocaux
 

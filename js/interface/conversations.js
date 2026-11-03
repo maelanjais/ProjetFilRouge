@@ -44,8 +44,9 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     canalTempsReelActif = null;
   }
 
+  // Un message est « à moi » si son auteur_id est le mien : le RLS garantit qu'on ne
+  // peut écrire qu'en son propre nom. Le pseudo, lui, peut changer ou être repris.
   const utilisateur = await recupererUtilisateurConnecte();
-  const pseudoActuel = utilisateur?.pseudo ?? '';
   const userIdActuel = utilisateur?.id ?? null;
 
   mettreAJourEnteteDiscussion(nomSalon);
@@ -57,11 +58,9 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     afficherAvisDiscussion('Impossible de charger les messages, rechargez la page.');
   } else {
     const messagesFormates = messages.map((m) => {
-      const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
-        || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
       return {
         contenu: m.contenu,
-        estEnvoye,
+        estEnvoye: m.auteur_id === userIdActuel,
         auteurPseudo: m.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(m.date_creation),
         date: m.date_creation,
@@ -72,10 +71,8 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
 
   // Écoute des nouveaux messages en temps réel
   canalTempsReelActif = ecouterNouveauxMessages(salonId, (nouveauMsg) => {
-    const estDeMoi = (userIdActuel && nouveauMsg.auteur_id === userIdActuel)
-      || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
-
-    if (!estDeMoi) {
+    // Ses propres messages sont déjà affichés au moment de l'envoi
+    if (nouveauMsg.auteur_id !== userIdActuel) {
       ajouterMessage({
         contenu: nouveauMsg.contenu,
         estEnvoye: false,
