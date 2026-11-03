@@ -59,10 +59,13 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     const messagesFormates = messages.map((m) => {
       const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
         || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
-      const estAudio = m.contenu && (m.contenu.startsWith('data:audio/') || m.contenu.startsWith('blob:'));
+      const estAudio = m.contenu
+        && (m.contenu.startsWith('data:audio/') || m.contenu.startsWith('blob:'));
+      const estImage = m.contenu && m.contenu.startsWith('data:image/');
       return {
-        texte: estAudio ? '' : (m.contenu || ''),
+        texte: estAudio || estImage ? '' : (m.contenu || ''),
         audioUrl: estAudio ? m.contenu : '',
+        imageUrl: estImage ? m.contenu : '',
         estEnvoye,
         auteurPseudo: m.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(m.date_creation),
@@ -78,10 +81,13 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
       || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
 
     if (!estDeMoi) {
-      const estAudio = nouveauMsg.contenu && (nouveauMsg.contenu.startsWith('data:audio/') || nouveauMsg.contenu.startsWith('blob:'));
+      const estAudio = nouveauMsg.contenu
+        && (nouveauMsg.contenu.startsWith('data:audio/') || nouveauMsg.contenu.startsWith('blob:'));
+      const estImage = nouveauMsg.contenu && nouveauMsg.contenu.startsWith('data:image/');
       ajouterMessage({
-        texte: estAudio ? '' : (nouveauMsg.contenu || ''),
+        texte: estAudio || estImage ? '' : (nouveauMsg.contenu || ''),
         audioUrl: estAudio ? nouveauMsg.contenu : '',
+        imageUrl: estImage ? nouveauMsg.contenu : '',
         estEnvoye: false,
         auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(nouveauMsg.date_creation),
@@ -153,6 +159,9 @@ function formaterApercuContenu(contenu) {
   if (!contenu) return '';
   if (contenu.startsWith('data:audio/') || contenu.startsWith('blob:')) {
     return 'Message vocal 🎙️';
+  }
+  if (contenu.startsWith('data:image/')) {
+    return 'Photo';
   }
   return contenu;
 }

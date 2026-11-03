@@ -14,6 +14,10 @@ const boutonMicro = document.querySelector('.bouton-micro');
 const boutonJoindre = document.querySelector('.bouton-joindre');
 const enteteNom = document.querySelector('.discussion__nom');
 
+// Taille maximale d'une image : encodée en base64 (+33 %) dans messages.contenu,
+// elle est rechargée à chaque ouverture de la conversation.
+const TAILLE_MAX_IMAGE = 1024 * 1024; // 1 Mo
+
 // id du salon ouvert, privé à ce module : conversations.js le change avec
 // definirSalonActif(). null tant qu'aucune conversation n'est ouverte.
 let idSalonActif = null;
@@ -94,8 +98,15 @@ export function creerElementMessage({
   heure = formaterHeureCourante(),
 }) {
   // Si le message est un vocal encodé (data:audio/... ou blob:)
-  if (!audioUrl && typeof texte === 'string' && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))) {
+  if (!audioUrl && typeof texte === 'string'
+    && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))) {
     audioUrl = texte;
+    texte = '';
+  }
+
+  // Si le message est une image encodée (data:image/...)
+  if (!imageUrl && typeof texte === 'string' && texte.startsWith('data:image/')) {
+    imageUrl = texte;
     texte = '';
   }
 
@@ -156,7 +167,8 @@ export function ajouterMessage({
   conteneurMessages.appendChild(element);
   defilerEnBas();
 
-  const estAudio = Boolean(audioUrl || (texte && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))));
+  const estAudio = Boolean(audioUrl
+    || (texte && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))));
   const apercuTexte = estAudio
     ? 'Message vocal 🎙️'
     : (texte || (imageUrl ? 'Photo 📷' : ''));
@@ -350,8 +362,8 @@ if (boutonMicro) {
               signalerEchecEnvoi(elementVocal);
             }
           }
-        } catch (erreur) {
-          console.error('Erreur traitement audio :', erreur);
+        } catch {
+          // blobEnDataUrl échoue si l'enregistrement ne peut pas être lu
           afficherAvisDiscussion('Impossible de finaliser le message vocal.');
         }
       });
@@ -375,13 +387,41 @@ if (boutonJoindre) {
   });
 }
 
-champFichier.addEventListener('change', () => {
+champFichier.addEventListener('change', async () => {
   const fichier = champFichier.files[0];
+  champFichier.value = '';
   if (!fichier) return;
 
-  const imageUrl = URL.createObjectURL(fichier);
-  ajouterMessage({ imageUrl, estEnvoye: true });
-  champFichier.value = '';
+  if (!fichier.type.startsWith('image/')) {
+    afficherAvisDiscussion('Seules les images peuvent être envoyées.');
+    return;
+  }
+  if (fichier.size > TAILLE_MAX_IMAGE) {
+    afficherAvisDiscussion('Image trop lourde : 1 Mo maximum.');
+    return;
+  }
+  if (!idSalonActif) {
+    afficherAvisDiscussion('Ouvrez une conversation avant d\'envoyer une image.');
+    return;
+  }
+
+  try {
+    const imageDataUrl = await blobEnDataUrl(fichier);
+    const utilisateur = await recupererUtilisateurConnecte();
+    const elementImage = ajouterMessage({ imageUrl: imageDataUrl, estEnvoye: true });
+
+    const { error } = await envoyerMessageSupabase({
+      salonId: idSalonActif,
+      contenu: imageDataUrl,
+      auteurPseudo: utilisateur?.pseudo ?? 'Moi',
+      auteurId: utilisateur?.id ?? null,
+    });
+    if (error) {
+      signalerEchecEnvoi(elementImage);
+    }
+  } catch {
+    afficherAvisDiscussion('Impossible de lire l\'image.');
+  }
 });
 
 defilerEnBas();
