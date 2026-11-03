@@ -49,19 +49,21 @@ css/
   index.css            # Styles spécifiques à l'écran de messagerie
 js/
   interface/           # Manipulation du DOM et événements (affichage)
+    connexion.js       # Formulaire de connexion
+    inscription.js     # Formulaire d'inscription et vérification du pseudo
     parametres.js      # Panneau latéral des paramètres
     contacts.js        # Panneau latéral de la liste des contacts
-    discussion.js      # Zone de discussion, envoi des messages et vocal
+    discussion.js      # Zone de discussion, envoi des messages, vocaux et images
     conversations.js   # Liste des conversations, sélection et recherche
     recherche-contact.js # Dialogue de recherche et ajout de contact
     index.js           # Contrôle d'accès et synchronisation du profil
-    utils.js           # Messages d'erreur et utilitaires
+    utils.js           # Messages d'erreur, création d'éléments, type des messages
   donnees/             # Appels Supabase uniquement, sans DOM
     config-supabase.js # Client Supabase et configuration
-    authentification.js# Fonctions d'authentification Supabase Auth
+    authentification.js # Inscription, connexion, session et déconnexion
     contacts.js        # Requêtes Supabase pour la liste de contacts
     messages.js        # Requêtes Supabase et temps réel des messages
-    profils.js         # Recherche de profils utilisateurs
+    profils.js         # Recherche de profils, pseudo de l'utilisateur
     salons.js          # Récupération et création des salons
 sql/
   creation-base.sql    # Script de création complète de la base Supabase

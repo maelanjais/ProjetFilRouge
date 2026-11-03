@@ -67,7 +67,7 @@
   justify-content: center;
   gap: var(--espace-l);
   width: 100%;
-  max-width: 40rem;
+  max-width: var(--largeur-formulaire-auth);
   padding: var(--espace-xxl);
 }
 
@@ -148,13 +148,13 @@
   }
 
   .auth__slogan {
-    font-size: clamp(2rem, 7vw, 3rem);
+    font-size: var(--taille-slogan-mobile);
     margin-top: var(--espace-s);
   }
 
   .auth__slogan::after {
     margin-top: var(--espace-m);
-    width: 3rem;
+    width: var(--largeur-trait-slogan-mobile);
   }
 
   .auth__contenu {
@@ -173,6 +173,6 @@
   }
 
   .champ__saisie {
-    font-size: 1rem; /* Évite le zoom automatique sur iOS */
+    font-size: var(--taille-m); /* 1rem minimum : évite le zoom automatique sur iOS */
   }
 }

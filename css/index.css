@@ -776,16 +776,16 @@
 
 /* Bulle dédiée aux messages vocaux */
 .message__bulle--audio {
-  min-width: 250px;
-  max-width: min(340px, 85%);
+  min-width: var(--largeur-min-bulle-audio);
+  max-width: min(var(--largeur-max-bulle-audio), 85%);
   padding: var(--espace-xs) var(--espace-s);
 }
 
 /* Pièces jointes et messages vocaux */
 .message__audio {
   width: 100%;
-  min-width: 220px;
-  height: 40px;
+  min-width: var(--largeur-min-lecteur-audio);
+  height: var(--hauteur-lecteur-audio);
   border-radius: var(--rayon-pilule);
   margin-top: var(--espace-xxs);
   margin-bottom: var(--espace-xxs);
@@ -793,7 +793,7 @@
 
 .message__image {
   max-width: 100%;
-  max-height: 260px;
+  max-height: var(--hauteur-max-image-message);
   border-radius: var(--rayon-m);
   object-fit: cover;
   display: block;
@@ -823,7 +823,7 @@
    <dialog> ouvert avec showModal() : centré et au-dessus de toute la page. */
 .recherche-contact {
   width: 90%;
-  max-width: 32rem;
+  max-width: var(--largeur-fenetre-recherche);
   padding: var(--espace-l);
   border: none;
   border-radius: var(--rayon-l);
@@ -932,7 +932,7 @@
 /* ---- Adaptation Responsive ---- */
 @media (max-width: 768px) {
   .entete-app {
-    height: 3.5rem;
+    height: var(--hauteur-entete-mobile);
     padding: 0 var(--espace-m);
   }
 
@@ -972,7 +972,7 @@
   }
 
   .discussion__entete {
-    height: 3.5rem;
+    height: var(--hauteur-entete-mobile);
     padding: 0 var(--espace-m);
     gap: var(--espace-s);
   }
@@ -991,7 +991,7 @@
   }
 
   .message__bulle--audio {
-    min-width: 230px;
+    min-width: var(--largeur-min-bulle-audio-mobile);
     max-width: 90%;
   }
 
@@ -1004,7 +1004,7 @@
   }
 
   .saisie-message {
-    font-size: 1rem; /* Évite le zoom automatique sur iOS */
+    font-size: var(--taille-m); /* 1rem minimum : évite le zoom automatique sur iOS */
   }
 
   .bouton-envoyer {
@@ -1020,13 +1020,13 @@
 
   .panneau-parametres__entete,
   .panneau-contacts__entete {
-    height: 3.5rem;
+    height: var(--hauteur-entete-mobile);
     padding: 0 var(--espace-m);
   }
 
   /* Fenêtre modale de recherche de contact */
   .recherche-contact {
-    width: calc(100% - 2rem);
+    width: calc(100% - var(--espace-xl));
     padding: var(--espace-m);
   }
 }

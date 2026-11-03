@@ -32,7 +32,6 @@
   --couleur-fond-clair: #e9ede5;
   --couleur-bulle-recue: #e9ede5;
   --couleur-bulle-envoyee: var(--couleur-primaire);
-  --couleur-statut: #9da398;
 
   /* Polices */
   --police-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -72,9 +71,23 @@
   --hauteur-entete-discussion: 4.625rem;
   --largeur-barre-laterale: 20.625rem;
   --largeur-panneau: 23.75rem;
-  --taille-badge: 1.25rem;
   --taille-bouton-icone: 2.25rem;
   --taille-case-a-cocher: 1rem;
+  --hauteur-entete-mobile: 3.5rem;
+  --largeur-fenetre-recherche: 32rem;
+  --largeur-formulaire-auth: 40rem;
+
+  /* Messages vocaux et images */
+  --largeur-min-bulle-audio: 15.625rem;
+  --largeur-min-bulle-audio-mobile: 14.375rem;
+  --largeur-max-bulle-audio: 21.25rem;
+  --largeur-min-lecteur-audio: 13.75rem;
+  --hauteur-lecteur-audio: 2.5rem;
+  --hauteur-max-image-message: 16.25rem;
+
+  /* Slogan des pages d'authentification sur mobile */
+  --taille-slogan-mobile: clamp(2rem, 7vw, 3rem);
+  --largeur-trait-slogan-mobile: 3rem;
 
   /* Durées d'animation */
   --duree-transition: 0.2s;
@@ -85,6 +98,7 @@
   --epaisseur-accent: 3px;
   --espacement-lettres: 0.12em;
   --espacement-lettres-large: 0.2em;
+  --decalage-soulignement: 0.2em;
   --hauteur-cible-tactile: 2.75rem;
 }
 
@@ -124,7 +138,7 @@ button {
 /* ---- Liens ---- */
 a {
   color: var(--couleur-primaire-foncee);
-  text-underline-offset: 0.2em;
+  text-underline-offset: var(--decalage-soulignement);
 }
 
 a:hover {

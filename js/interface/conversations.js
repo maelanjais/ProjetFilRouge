@@ -93,11 +93,6 @@ export function activerConversation(elementItem) {
   }
   elementItem.classList.add('conversation-item--active');
 
-  const badgeNonLu = elementItem.querySelector('.badge-non-lu');
-  if (badgeNonLu) {
-    badgeNonLu.remove();
-  }
-
   // En vue mobile, bascule l'affichage sur la discussion
   const contenuApp = document.querySelector('.contenu-app');
   if (contenuApp) {

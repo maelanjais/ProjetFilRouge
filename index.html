@@ -6,7 +6,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Messagerie instantanée Web : échangez des messages en temps réel.">
+  <meta name="description"
+    content="Messagerie instantanée Web : échangez des messages en temps réel.">
   <title>Accueil - Messagerie</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/index.css">
@@ -26,10 +27,12 @@
     <a href="index.html" class="logo">MESSAGERIE</a>
 
     <!-- Profil cliquable : un seul bouton qui ouvre le panneau des paramètres -->
-    <button type="button" class="entete-profil" id="bouton-ouvrir-parametres" title="Ouvrir les paramètres">
+    <button type="button" class="entete-profil" id="bouton-ouvrir-parametres"
+      title="Ouvrir les paramètres">
       <span class="entete-profil__icone">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+          focusable="false">
           <circle cx="12" cy="12" r="3"></circle>
           <path
             d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
@@ -55,8 +58,9 @@
         <!-- Recherche et accès à la gestion des contacts, sur une même ligne -->
         <div class="barre-laterale__recherche-et-contacts">
           <div class="recherche">
-            <svg class="recherche__icone" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="recherche__icone" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true" focusable="false">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
@@ -64,9 +68,11 @@
               placeholder="Rechercher une conversation" aria-label="Rechercher une conversation">
           </div>
 
-          <button type="button" class="bouton-contacts" id="bouton-ouvrir-contacts" aria-label="Gérer les contacts">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <button type="button" class="bouton-contacts" id="bouton-ouvrir-contacts"
+            aria-label="Gérer les contacts">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+              focusable="false">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -186,7 +192,9 @@
         <button type="submit" class="bouton-principal">
           Enregistrer
         </button>
-        <a href="connexion.html" class="bouton-deconnexion" id="lien-deconnexion">Se déconnecter</a>
+        <a href="connexion.html" class="bouton-deconnexion" id="lien-deconnexion">
+          Se déconnecter
+        </a>
         <p class="panneau-parametres__erreur" id="message-erreur" role="alert"></p>
       </div>
     </form>
@@ -221,7 +229,8 @@
     </label>
     <input class="recherche-contact__champ" type="search" id="champ-recherche-contact"
       placeholder="Rechercher un pseudo" autocomplete="off" maxlength="30">
-    <ul class="recherche-contact__resultats" id="resultats-recherche-contact" aria-live="polite"></ul>
+    <ul class="recherche-contact__resultats" id="resultats-recherche-contact"
+      aria-live="polite"></ul>
   </dialog>
 
 </body>
