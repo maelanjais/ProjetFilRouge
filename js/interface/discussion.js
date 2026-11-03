@@ -4,7 +4,7 @@
 
 import { envoyerMessageSupabase } from '../donnees/messages.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
-import { creerElement } from './utils.js';
+import { creerElement, detecterTypeContenu } from './utils.js';
 
 // ---- Éléments du DOM ----
 const conteneurMessages = document.querySelector('.discussion__messages');
@@ -97,15 +97,15 @@ export function creerElementMessage({
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
+  const type = detecterTypeContenu(texte);
   // Si le message est un vocal encodé (data:audio/... ou blob:)
-  if (!audioUrl && typeof texte === 'string'
-    && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))) {
+  if (type === 'audio') {
     audioUrl = texte;
     texte = '';
   }
 
   // Si le message est une image encodée (data:image/...)
-  if (!imageUrl && typeof texte === 'string' && texte.startsWith('data:image/')) {
+  if (type === 'image') {
     imageUrl = texte;
     texte = '';
   }
@@ -167,11 +167,10 @@ export function ajouterMessage({
   conteneurMessages.appendChild(element);
   defilerEnBas();
 
-  const estAudio = Boolean(audioUrl
-    || (texte && (texte.startsWith('data:audio/') || texte.startsWith('blob:'))));
+  const estAudio = Boolean(audioUrl) || detecterTypeContenu(texte) === 'audio';
   const apercuTexte = estAudio
     ? 'Message vocal 🎙️'
-    : (texte || (imageUrl ? 'Photo 📷' : ''));
+    : (texte || (imageUrl ? 'Photo' : ''));
   document.dispatchEvent(new CustomEvent('message-ajoute', {
     detail: {
       texte: apercuTexte,

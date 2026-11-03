@@ -31,3 +31,15 @@ export function creerElement(balise, classe, texte = '') {
   element.textContent = texte;
   return element;
 }
+
+// Renvoie le type d'un contenu de message : 'audio', 'image' ou 'texte'.
+// blob: désigne un ancien vocal, enregistré avant le passage en data URL.
+export function detecterTypeContenu(contenu) {
+  if (contenu?.startsWith('data:audio/') || contenu?.startsWith('blob:')) {
+    return 'audio';
+  }
+  if (contenu?.startsWith('data:image/')) {
+    return 'image';
+  }
+  return 'texte';
+}

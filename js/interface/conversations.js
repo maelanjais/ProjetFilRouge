@@ -22,7 +22,7 @@ import {
   creerSalon,
 } from '../donnees/salons.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
-import { creerElement } from './utils.js';
+import { creerElement, detecterTypeContenu } from './utils.js';
 
 let canalTempsReelActif = null;
 
@@ -59,13 +59,11 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     const messagesFormates = messages.map((m) => {
       const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
         || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
-      const estAudio = m.contenu
-        && (m.contenu.startsWith('data:audio/') || m.contenu.startsWith('blob:'));
-      const estImage = m.contenu && m.contenu.startsWith('data:image/');
+      const type = detecterTypeContenu(m.contenu);
       return {
-        texte: estAudio || estImage ? '' : (m.contenu || ''),
-        audioUrl: estAudio ? m.contenu : '',
-        imageUrl: estImage ? m.contenu : '',
+        texte: type === 'texte' ? (m.contenu || '') : '',
+        audioUrl: type === 'audio' ? m.contenu : '',
+        imageUrl: type === 'image' ? m.contenu : '',
         estEnvoye,
         auteurPseudo: m.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(m.date_creation),
@@ -81,13 +79,11 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
       || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
 
     if (!estDeMoi) {
-      const estAudio = nouveauMsg.contenu
-        && (nouveauMsg.contenu.startsWith('data:audio/') || nouveauMsg.contenu.startsWith('blob:'));
-      const estImage = nouveauMsg.contenu && nouveauMsg.contenu.startsWith('data:image/');
+      const type = detecterTypeContenu(nouveauMsg.contenu);
       ajouterMessage({
-        texte: estAudio || estImage ? '' : (nouveauMsg.contenu || ''),
-        audioUrl: estAudio ? nouveauMsg.contenu : '',
-        imageUrl: estImage ? nouveauMsg.contenu : '',
+        texte: type === 'texte' ? (nouveauMsg.contenu || '') : '',
+        audioUrl: type === 'audio' ? nouveauMsg.contenu : '',
+        imageUrl: type === 'image' ? nouveauMsg.contenu : '',
         estEnvoye: false,
         auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(nouveauMsg.date_creation),
@@ -156,14 +152,10 @@ function creerElementSalon(salon, nom) {
 
 // Renvoie un texte lisible pour l'aperçu dans la liste des conversations
 function formaterApercuContenu(contenu) {
-  if (!contenu) return '';
-  if (contenu.startsWith('data:audio/') || contenu.startsWith('blob:')) {
-    return 'Message vocal 🎙️';
-  }
-  if (contenu.startsWith('data:image/')) {
-    return 'Photo';
-  }
-  return contenu;
+  const type = detecterTypeContenu(contenu);
+  if (type === 'audio') return 'Message vocal 🎙️';
+  if (type === 'image') return 'Photo';
+  return contenu || '';
 }
 
 // Remplit l'aperçu et l'heure de chaque conversation avec le dernier message
