@@ -22,7 +22,7 @@ import {
   creerSalon,
 } from '../donnees/salons.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
-import { creerElement, detecterTypeContenu } from './utils.js';
+import { creerElement, formaterApercuContenu } from './utils.js';
 
 let canalTempsReelActif = null;
 
@@ -59,11 +59,8 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
     const messagesFormates = messages.map((m) => {
       const estEnvoye = (userIdActuel && m.auteur_id === userIdActuel)
         || (pseudoActuel && m.auteur_pseudo === pseudoActuel);
-      const type = detecterTypeContenu(m.contenu);
       return {
-        texte: type === 'texte' ? (m.contenu || '') : '',
-        audioUrl: type === 'audio' ? m.contenu : '',
-        imageUrl: type === 'image' ? m.contenu : '',
+        contenu: m.contenu,
         estEnvoye,
         auteurPseudo: m.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(m.date_creation),
@@ -79,11 +76,8 @@ export async function chargerSalonSupabase(salonId, nomSalon) {
       || (pseudoActuel && nouveauMsg.auteur_pseudo === pseudoActuel);
 
     if (!estDeMoi) {
-      const type = detecterTypeContenu(nouveauMsg.contenu);
       ajouterMessage({
-        texte: type === 'texte' ? (nouveauMsg.contenu || '') : '',
-        audioUrl: type === 'audio' ? nouveauMsg.contenu : '',
-        imageUrl: type === 'image' ? nouveauMsg.contenu : '',
+        contenu: nouveauMsg.contenu,
         estEnvoye: false,
         auteurPseudo: nouveauMsg.auteur_pseudo || 'Membre',
         heure: formaterHeureCourante(nouveauMsg.date_creation),
@@ -148,14 +142,6 @@ function creerElementSalon(salon, nom) {
   contenu.append(ligneNom, ligneApercu);
   li.append(contenu);
   return li;
-}
-
-// Renvoie un texte lisible pour l'aperçu dans la liste des conversations
-function formaterApercuContenu(contenu) {
-  const type = detecterTypeContenu(contenu);
-  if (type === 'audio') return 'Message vocal 🎙️';
-  if (type === 'image') return 'Photo';
-  return contenu || '';
 }
 
 // Remplit l'aperçu et l'heure de chaque conversation avec le dernier message
@@ -322,9 +308,9 @@ function attacherEcouteurs() {
     if (itemActif) {
       const apercu = itemActif.querySelector('.conversation-item__apercu');
       const elementHeure = itemActif.querySelector('.conversation-item__heure');
-      const texteApercu = formaterApercuContenu(texte);
+      // texte est déjà mis en forme par ajouterMessage (« Photo », « Message vocal »...)
       if (apercu) {
-        apercu.textContent = estEnvoye ? `Vous : ${texteApercu}` : texteApercu;
+        apercu.textContent = estEnvoye ? `Vous : ${texte}` : texte;
       }
       if (elementHeure) {
         elementHeure.textContent = "À l'instant";

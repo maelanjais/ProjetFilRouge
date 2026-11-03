@@ -4,7 +4,7 @@
 
 import { envoyerMessageSupabase } from '../donnees/messages.js';
 import { recupererUtilisateurConnecte } from '../donnees/profils.js';
-import { creerElement, detecterTypeContenu } from './utils.js';
+import { creerElement, detecterTypeContenu, formaterApercuContenu } from './utils.js';
 
 // ---- Éléments du DOM ----
 const conteneurMessages = document.querySelector('.discussion__messages');
@@ -87,62 +87,39 @@ export function defilerEnBas() {
 }
 
 // Crée et renvoie l'élément complet d'un message : bulle avec auteur (messages
-// reçus), texte, audio ou image, puis heure. Construit avec le DOM plutôt
-// qu'innerHTML pour que le contenu reçu ne soit jamais interprété comme du HTML.
+// reçus), puis texte, lecteur audio ou image selon le contenu, puis heure.
 export function creerElementMessage({
-  texte = '',
-  audioUrl = '',
-  imageUrl = '',
+  contenu = '',
   auteurPseudo = '',
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
-  const type = detecterTypeContenu(texte);
-  // Si le message est un vocal encodé (data:audio/... ou blob:)
-  if (type === 'audio') {
-    audioUrl = texte;
-    texte = '';
-  }
-
-  // Si le message est une image encodée (data:image/...)
-  if (type === 'image') {
-    imageUrl = texte;
-    texte = '';
-  }
-
-  // Ancien message sans audio dans la base : afficher un texte de secours
-  if (texte === '[Message vocal 🎙️]' && !audioUrl) {
-    texte = 'Message vocal indisponible (ancien format)';
-  }
-
+  const type = detecterTypeContenu(contenu);
   const elementMessage = creerElement(
     'div', `message ${estEnvoye ? 'message--envoye' : 'message--recu'}`);
   const bulle = creerElement('div', 'message__bulle');
-
-  if (audioUrl) {
-    bulle.classList.add('message__bulle--audio');
-  }
 
   if (!estEnvoye && auteurPseudo) {
     bulle.append(creerElement('span', 'message__auteur', auteurPseudo));
   }
 
-  // Ne pas afficher de texte si c'est un message vocal
-  if (audioUrl) {
+  if (type === 'audio') {
+    bulle.classList.add('message__bulle--audio');
     const audio = creerElement('audio', 'message__audio');
     audio.controls = true;
     audio.preload = 'metadata';
-    audio.src = audioUrl;
+    audio.src = contenu;
     bulle.append(audio);
-  } else if (texte) {
-    bulle.append(creerElement('p', 'message__texte', texte));
-  }
-
-  if (imageUrl) {
+  } else if (type === 'image') {
     const image = creerElement('img', 'message__image');
-    image.src = imageUrl;
+    image.src = contenu;
     image.alt = 'Image partagée dans la conversation';
     bulle.append(image);
+  } else if (contenu === '[Message vocal 🎙️]') {
+    // Ancien vocal enregistré sans son fichier audio
+    bulle.append(creerElement('p', 'message__texte', 'Message vocal indisponible (ancien format)'));
+  } else if (contenu) {
+    bulle.append(creerElement('p', 'message__texte', contenu));
   }
 
   bulle.append(creerElement('span', 'message__horodatage', heure));
@@ -152,28 +129,20 @@ export function creerElementMessage({
 
 // Ajoute un message à la discussion active et fait défiler vers le bas.
 export function ajouterMessage({
-  texte = '',
-  audioUrl = '',
-  imageUrl = '',
+  contenu = '',
   auteurPseudo = '',
   estEnvoye = true,
   heure = formaterHeureCourante(),
 }) {
-  if (!conteneurMessages) return;
+  if (!conteneurMessages) return null;
 
-  const element = creerElementMessage({
-    texte, audioUrl, imageUrl, auteurPseudo, estEnvoye, heure,
-  });
+  const element = creerElementMessage({ contenu, auteurPseudo, estEnvoye, heure });
   conteneurMessages.appendChild(element);
   defilerEnBas();
 
-  const estAudio = Boolean(audioUrl) || detecterTypeContenu(texte) === 'audio';
-  const apercuTexte = estAudio
-    ? 'Message vocal 🎙️'
-    : (texte || (imageUrl ? 'Photo' : ''));
   document.dispatchEvent(new CustomEvent('message-ajoute', {
     detail: {
-      texte: apercuTexte,
+      texte: formaterApercuContenu(contenu),
       estEnvoye,
       heure,
     },
@@ -277,7 +246,9 @@ if (formulaireMessage) {
     const userId = utilisateur?.id ?? null;
 
     // Affichage local immédiat, signalé en échec si la base refuse le message
-    const elementMessage = ajouterMessage({ texte, estEnvoye: true, auteurPseudo: pseudo });
+    const elementMessage = ajouterMessage({
+      contenu: texte, estEnvoye: true, auteurPseudo: pseudo,
+    });
 
     const { error } = await envoyerMessageSupabase({
       salonId: idSalonActif,
@@ -344,7 +315,7 @@ if (boutonMicro) {
 
           // Affichage local immédiat avec le lecteur audio seul (sans texte)
           const elementVocal = ajouterMessage({
-            audioUrl: audioDataUrl,
+            contenu: audioDataUrl,
             estEnvoye: true,
             auteurPseudo: pseudo,
           });
@@ -407,7 +378,7 @@ champFichier.addEventListener('change', async () => {
   try {
     const imageDataUrl = await blobEnDataUrl(fichier);
     const utilisateur = await recupererUtilisateurConnecte();
-    const elementImage = ajouterMessage({ imageUrl: imageDataUrl, estEnvoye: true });
+    const elementImage = ajouterMessage({ contenu: imageDataUrl, estEnvoye: true });
 
     const { error } = await envoyerMessageSupabase({
       salonId: idSalonActif,

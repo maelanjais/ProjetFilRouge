@@ -43,3 +43,11 @@ export function detecterTypeContenu(contenu) {
   }
   return 'texte';
 }
+
+// Renvoie un texte lisible pour l'aperçu dans la liste des conversations
+export function formaterApercuContenu(contenu) {
+  const type = detecterTypeContenu(contenu);
+  if (type === 'audio') return 'Message vocal 🎙️';
+  if (type === 'image') return 'Photo';
+  return contenu || '';
+}
